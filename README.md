@@ -1,5 +1,11 @@
 # Bomberman
-Le projet consiste en la réalisation d'un clone du célèbre bomberman multijoueurs en réseau.
+
+# Liens utiles:
+
+https://trello.com/b/nY6LYV5j/etude-et-documentation-sur-le-projet
+
+
+### Le projet consiste en la réalisation d'un clone du célèbre bomberman multijoueurs en réseau.
 
 ![alt text](https://i.redd.it/tfiq18e19ji01.png)
 
