@@ -1,0 +1,3 @@
+-POur un joueur solo 10K points = +1PV
+-En solo on parcours des niveau
+-En multijoueur on change de partie 
