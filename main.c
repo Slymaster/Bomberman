@@ -10,6 +10,11 @@
 #define SPEED (300)
 int map(void)
 {
+  SDL_Surface* surface;
+  SDL_Texture* background;
+  SDL_Texture* player;
+
+
     // attempt to initialize graphics and timer system
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
     {
@@ -39,39 +44,65 @@ int map(void)
         return 1;
     }
 
-    // load the image into memory using SDL_image library function
-    SDL_Surface* surface = IMG_Load("asset/view1.png");
-    SDL_Surface* surface2 = IMG_Load("asset/NES-Bomberman-Playfield.png");
-    if (!surface || !surface2)
-    {
-        printf("error creating surface\n");
-        SDL_DestroyRenderer(rend);
-        SDL_DestroyWindow(win);
-        SDL_Quit();
-        return 1;
-    }
+    // // load the image into memory using SDL_image library function
+    // SDL_Surface* surface = IMG_Load("asset/view1.png");
+    // if (!surface)
+    // {
+    //     printf("error creating surface\n");
+    //     SDL_DestroyRenderer(rend);
+    //     SDL_DestroyWindow(win);
+    //     SDL_Quit();
+    //     return 1;
+    // }
+    //
+    // // load the image data into the graphics hardware's memory
+    // SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, surface);
+    // SDL_FreeSurface(surface);
+    // if (!tex || !tex2)
+    // {
+    //     printf("error creating texture: %s\n", SDL_GetError());
+    //     SDL_DestroyRenderer(rend);
+    //     SDL_DestroyWindow(win);
+    //     SDL_Quit();
+    //     return 1;
+    // }
+    //
+    // SDL_Surface* surface = IMG_Load("asset/NES-Bomberman-Playfield.png");
+    // if (!surface)
+    // {
+    //     printf("error creating surface\n");
+    //     SDL_DestroyRenderer(rend);
+    //     SDL_DestroyWindow(win);
+    //     SDL_Quit();
+    //     return 1;
+    // }
+    // SDL_Texture* tex2 = SDL_CreateTextureFromSurface(rend, surface);
+    // SDL_FreeSurface(surface);
 
-
-    // load the image data into the graphics hardware's memory
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, surface);
-    SDL_Texture* tex2 = SDL_CreateTextureFromSurface(rend, surface2);
+    surface = IMG_Load("asset/NES-Bomberman-Playfield.png");
+    background = SDL_CreateTextureFromSurface(rend, surface);
     SDL_FreeSurface(surface);
-    if (!tex || !tex2)
-    {
-        printf("error creating texture: %s\n", SDL_GetError());
-        SDL_DestroyRenderer(rend);
-        SDL_DestroyWindow(win);
-        SDL_Quit();
-        return 1;
-    }
 
-    SDL_SetRenderDrawColor(rend,46,204,64,0.8);
+    surface = IMG_Load("asset/view1.png");
+    player = SDL_CreateTextureFromSurface(rend, surface);
+    SDL_FreeSurface(surface);
+
+
+
+
+
+
+
+
+    //SDL_SetRenderDrawColor(rend,46,204,64,0.8);
 
     // struct to hold the position and size of the sprite
     SDL_Rect dest;
 
     // get and scale the dimensions of texture
-    SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+    //SDL_QueryTexture(tex2, NULL, NULL, NULL, NULL);
+    SDL_QueryTexture(player, NULL, NULL, &dest.w, &dest.h);
+
     dest.w /= 1;
     dest.h /= 1;
 
@@ -123,10 +154,11 @@ int map(void)
                     break;
 
                     case SDL_SCANCODE_C: //Quitter en attendant d'avoir quelque chose de mieux
-                    SDL_DestroyTexture(tex);
+                    SDL_DestroyTexture(player);
                     SDL_DestroyRenderer(rend);
                     SDL_DestroyWindow(win);
                     SDL_Quit();
+                    exit(EXIT_SUCCESS);
                     break;
                 }
                 break;
@@ -179,8 +211,8 @@ int map(void)
         SDL_RenderClear(rend);
 
         // draw the image to the window
-        SDL_RenderCopy(rend, tex, NULL, &dest);
-        SDL_RenderCopy(rend, tex2, NULL, NULL);
+        SDL_RenderCopy(rend, background, NULL, NULL);
+        SDL_RenderCopy(rend, player, NULL, &dest);
         SDL_RenderPresent(rend);
 
         // wait 1/60th of a second
@@ -188,11 +220,23 @@ int map(void)
     }
 
     // clean up resources before exiting
-    SDL_DestroyTexture(tex);
+    SDL_DestroyTexture(player);
+    SDL_DestroyTexture(background);
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
     SDL_Quit();
 }
+
+
+
+
+// -------------------------- FIN MAP --------------------------
+
+
+
+
+
+
 
 
 typedef enum {
