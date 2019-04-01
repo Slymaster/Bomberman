@@ -41,7 +41,8 @@ int map(void)
 
     // load the image into memory using SDL_image library function
     SDL_Surface* surface = IMG_Load("asset/view1.png");
-    if (!surface)
+    SDL_Surface* surface2 = IMG_Load("asset/NES-Bomberman-Playfield.png");
+    if (!surface || !surface2)
     {
         printf("error creating surface\n");
         SDL_DestroyRenderer(rend);
@@ -53,8 +54,9 @@ int map(void)
 
     // load the image data into the graphics hardware's memory
     SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, surface);
+    SDL_Texture* tex2 = SDL_CreateTextureFromSurface(rend, surface2);
     SDL_FreeSurface(surface);
-    if (!tex)
+    if (!tex || !tex2)
     {
         printf("error creating texture: %s\n", SDL_GetError());
         SDL_DestroyRenderer(rend);
@@ -63,7 +65,7 @@ int map(void)
         return 1;
     }
 
-	SDL_SetRenderDrawColor(rend,46,204,64,0.8);
+    SDL_SetRenderDrawColor(rend,46,204,64,0.8);
 
     // struct to hold the position and size of the sprite
     SDL_Rect dest;
@@ -87,7 +89,7 @@ int map(void)
 
     // set to 1 when window close button is pressed
     int close_requested = 0;
-    
+
     // animation loop
     while (!close_requested)
     {
@@ -118,6 +120,13 @@ int map(void)
                 case SDL_SCANCODE_D:
                 case SDL_SCANCODE_RIGHT:
                     right = 1;
+                    break;
+
+                    case SDL_SCANCODE_C: //Quitter en attendant d'avoir quelque chose de mieux
+                    SDL_DestroyTexture(tex);
+                    SDL_DestroyRenderer(rend);
+                    SDL_DestroyWindow(win);
+                    SDL_Quit();
                     break;
                 }
                 break;
@@ -165,18 +174,19 @@ int map(void)
         // set the positions in the struct
         dest.y = (int) y_pos;
         dest.x = (int) x_pos;
-        
+
         // clear the window
         SDL_RenderClear(rend);
 
         // draw the image to the window
         SDL_RenderCopy(rend, tex, NULL, &dest);
+        SDL_RenderCopy(rend, tex2, NULL, NULL);
         SDL_RenderPresent(rend);
 
         // wait 1/60th of a second
         SDL_Delay(1000/60);
     }
-    
+
     // clean up resources before exiting
     SDL_DestroyTexture(tex);
     SDL_DestroyRenderer(rend);
@@ -205,7 +215,7 @@ int main(int argc, char const *argv[])
 
     SDL_Rect rectangle;
     SDL_Event event;
-    
+
     if(SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         SDL_Log("Error: init SDL > %s \n", SDL_GetError());
@@ -262,7 +272,7 @@ int main(int argc, char const *argv[])
     rectangle.y = (600 - rectangle.h) /2;
 
     e_statMenue choiceUser;
-    
+
     while(run)
     {
         SDL_RenderClear(render);
@@ -284,7 +294,7 @@ int main(int argc, char const *argv[])
                     case SDLK_a:
                         choiceUser = PLAY_SOLO;
                     break;
-                
+
                     default:
                        // printf("no case match");
                     break;
@@ -306,14 +316,9 @@ int main(int argc, char const *argv[])
                     SDL_DestroyWindow(window);
                     exit(EXIT_FAILURE);
                 }
-		map();
-
-
-
-
-
-
-
+                SDL_DestroyRenderer(render);
+                SDL_DestroyWindow(window);
+                map(); // display map
             break;
 
             case MAIN_MENUE:
@@ -328,7 +333,7 @@ int main(int argc, char const *argv[])
             break;
 
             default:
-                
+
             break;
         }
         SDL_RenderPresent(render);
