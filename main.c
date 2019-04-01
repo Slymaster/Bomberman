@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "SDL2/SDL_image.h"
 
-
 typedef enum {
 
     MAIN_MENUE,
@@ -19,7 +18,6 @@ int main(int argc, char const *argv[])
     SDL_Renderer *render = NULL;
     SDL_Surface *img = NULL;
     SDL_Surface *img2 = NULL;
-    //SDL_Renderer *render = NULL;
     SDL_Texture *textur = NULL;
 
     SDL_Rect rectangle;
@@ -48,7 +46,7 @@ int main(int argc, char const *argv[])
     }
 
     img = SDL_LoadBMP("./asset/header.bmp");
-    img2 = IMG_Load("./asset/109160.png");
+    img2 = SDL_LoadBMP("./asset/NES-Bomberman-Playfield.bmp");
     //SDL_FreeSurface(img);
 
     if(img == NULL)
@@ -127,6 +125,14 @@ int main(int argc, char const *argv[])
                 }
 
                 textur = SDL_CreateTextureFromSurface(render, img2);
+                //Display img:
+                if(SDL_RenderCopy(render, textur, NULL, &rectangle) != 0)
+                {
+                    SDL_Log("Error: can't display texture > %s \n", SDL_GetError());
+                    SDL_DestroyRenderer(render);
+                    SDL_DestroyWindow(window);
+                    exit(EXIT_FAILURE);
+                }
             break;
 
             case MAIN_MENUE:
