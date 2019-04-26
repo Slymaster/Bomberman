@@ -1,8 +1,8 @@
-# Bomberman
+# :boom: Bomberman
 
 # Liens utiles:
 
-https://trello.com/b/nY6LYV5j/etude-et-documentation-sur-le-projet
+:rocket: https://trello.com/b/nY6LYV5j/etude-et-documentation-sur-le-projet
 
 
 ### Le projet consiste en la réalisation d'un clone du célèbre bomberman multijoueurs en réseau.
