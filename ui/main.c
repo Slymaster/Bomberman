@@ -280,7 +280,7 @@ int main(int argc, char const *argv[])
         return 1;
     }
 
-        surface = IMG_Load("./asset/header.jpg");
+        surface = IMG_Load("./asset/menu.png");
         img = SDL_CreateTextureFromSurface(rend, surface);
         SDL_FreeSurface(surface);
 
@@ -317,7 +317,7 @@ int main(int argc, char const *argv[])
     //SDL_QueryTexture(tex2, NULL, NULL, NULL, NULL);
     SDL_QueryTexture(start, NULL, NULL, &dest.w, &dest.h);
 
-    dest.y = 100; // hat
+    dest.y = 180; // hat
     dest.x = 200; // lar
 
 
@@ -391,17 +391,17 @@ int main(int argc, char const *argv[])
             break;
 
             case INITIAL_MENU:
-                dest.y = 100;
+                dest.y = 180;
                 down = 0;
             break;
 
             case DOWN_MENU_1:
-                dest.y = 200;
+                dest.y = 280;
                 down = 1;
             break;
 
             case DOWN_MENU_2:
-                dest.y = 300;
+                dest.y = 380;
                 down = 2;
             break;
 
