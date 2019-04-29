@@ -82,13 +82,23 @@ int map(void)
 
     // struct to hold the position and size of the sprite
     SDL_Rect dest;
+    SDL_Rect source;
 
     // get and scale the dimensions of texture
     //SDL_QueryTexture(tex2, NULL, NULL, NULL, NULL);
     SDL_QueryTexture(player, NULL, NULL, &dest.w, &dest.h);
 
-    dest.w /= 1;
-    dest.h /= 1;
+    // Initialisation du perso bomberman qui regarde en haut
+
+    // position dans l'image
+    source.y = dest.y = (float)(262/10)*1; // hauteur 18 = 1ere ligne
+    source.x = dest.x = (float)(310/17)*4; // largeur -> 17 px de largeur entre chaque slide
+    // gauche *3 larg
+    // haut 
+
+    //Format ok
+    source.w = dest.w = (float)310/18; // largeur
+    source.h = dest.h = (float)262/13; // hauteur
 
     // start sprite in center of screen
     float x_pos = (WINDOW_WIDTH - dest.w) / 2;
@@ -172,10 +182,27 @@ int map(void)
 
         // determine velocity
         x_vel = y_vel = 0;
-        if (up && !down) y_vel = -SPEED;
-        if (down && !up) y_vel = SPEED;
-        if (left && !right) x_vel = -SPEED;
-        if (right && !left) x_vel = SPEED;
+        if (up && !down) {
+            source.x = (float)(310/17)*3;
+            source.y = (float)(262/10)*1;
+            y_vel = -SPEED;
+            
+        }
+        if (down && !up) {
+            source.x = (float)(310/17)*3;
+            source.y = (float)(262/10)*2;
+            y_vel = SPEED;
+        }
+        if (left && !right) {
+            x_vel = -SPEED;
+            source.x = (float)(310/17)*2;
+            source.y = (float)(262/10)*2;
+        }
+        if (right && !left) {
+            source.x = (float)(310/17)*6.8;
+            source.y = (float)(262/10)*2;
+            x_vel = SPEED;
+        }
 
         // update positions
         x_pos += x_vel / 60;
@@ -196,7 +223,7 @@ int map(void)
 
         // draw the image to the window
         SDL_RenderCopy(rend, background, NULL, NULL);
-        SDL_RenderCopy(rend, player, NULL, &dest);
+        SDL_RenderCopy(rend, player, &source, &dest);
         SDL_RenderPresent(rend);
 
         // wait 1/60th of a second
@@ -312,21 +339,20 @@ int main(int argc, char const *argv[])
 
         // struct to hold the position and size of the sprite
     SDL_Rect dest;
+    SDL_Rect source;
 
     // get and scale the dimensions of texture
     //SDL_QueryTexture(tex2, NULL, NULL, NULL, NULL);
     SDL_QueryTexture(start, NULL, NULL, &dest.w, &dest.h);
 
-    dest.y = 180; // hat
-    dest.x = 200; // lar
-
-
+    dest.x = 200;
+    dest.y = 180;
 
     e_statMenue choiceUser;
 
     while(run)
     {
-        SDL_RenderClear(render);
+        // SDL_RenderClear(rend);
         SDL_PollEvent(&event);
 
         switch(event.type)
@@ -385,7 +411,7 @@ int main(int argc, char const *argv[])
         switch(choiceUser)
         {
             case PLAY_SOLO:
-                SDL_DestroyRenderer(render);
+                SDL_DestroyRenderer(rend);
                 SDL_DestroyWindow(window);
                 map(); // display map
             break;
