@@ -1,10 +1,121 @@
-#include "helper.h"
+#include <SDL2/SDL.h>
+#include <stdio.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_timer.h>
+#include <math.h>
+#include <stdlib.h>
+
+#define WINDOW_WIDTH (992)
+#define WINDOW_HEIGHT (416)
+
+// speed in pixels/second
+#define SPEED (300)
+#define TILE_WIDTH (32)
+
+int tabTile [] = {
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+                };
+
+int tabTile2[13][31] = {
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
+                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
+                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
+                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
+                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
+                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+                    };
+
+int checkWall(float playerPosX, float playerPosY)
+{
+    //printf("Im in the function:");
+    int yValInt = (int) ((playerPosY * 30)/495);
+    int xValInt = (int) ((playerPosX * 12)/207);
+      printf("valeur xInt: %d\n \n", xValInt);
+       fflush(stdout);
+        printf("yValInt: %d\n \n", yValInt);
+         fflush(stdout);
+        printf("valeur retounre: %d\n \n", tabTile2[yValInt][xValInt]);
+
+    if(tabTile2[yValInt][xValInt] == 0)
+    {
+        printf("valeur retounre: %d\n \n", tabTile2[yValInt][xValInt]);
+       // printf("yValInt: %d\n \n", yValInt);
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+/*int checkMapEdge(float playerPosX, float playerPosY, int playerW, int playerH, int mapW, int mapH)
+{
+    printf("Im in the check \n");
+    fflush(stdout);
+
+     int indexRow;
+
+     printf("Value width of map: %d \n", mapW);
+    fflush(stdout);
+
+     double valDoubleX = (double) playerPosX;
+     double valDoubleY = (double) playerPosY;
+
+        printf("before floor \n");
+    fflush(stdout);
+
+     int valIntX = floor(valDoubleX)/16;
+     int valIntY = floor(valDoubleY)/16;
+
+     printf("valIntX: %d", valIntX);
+     fflush(stdout);
+
+    printf("valIntY: %d \n", valIntY);
+    fflush(stdout);
+
+     indexRow = valIntX + (mapW/16) * valIntY;
+
+     printf("valeur de indexRow: %d \n", indexRow);
+    fflush(stdout);
+
+    if(tabTile[indexRow] == 0)
+    {
+
+        return 1;
+    }else{
+        return 0;
+    }
+
+}*/
 
 int map(void)
 {
   SDL_Surface* surface;
   SDL_Texture* background;
   SDL_Texture* player;
+
+  SDL_Texture* wall;
+  SDL_Texture* grass;
+
 
     // attempt to initialize graphics and timer system
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
@@ -35,70 +146,34 @@ int map(void)
         return 1;
     }
 
-    // // load the image into memory using SDL_image library function
-    // SDL_Surface* surface = IMG_Load("asset/view1.png");
-    // if (!surface)
-    // {
-    //     printf("error creating surface\n");
-    //     SDL_DestroyRenderer(rend);
-    //     SDL_DestroyWindow(win);
-    //     SDL_Quit();
-    //     return 1;
-    // }
-    //
-    // // load the image data into the graphics hardware's memory
-    // SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, surface);
-    // SDL_FreeSurface(surface);
-    // if (!tex || !tex2)
-    // {
-    //     printf("error creating texture: %s\n", SDL_GetError());
-    //     SDL_DestroyRenderer(rend);
-    //     SDL_DestroyWindow(win);
-    //     SDL_Quit();
-    //     return 1;
-    // }
-    //
-    // SDL_Surface* surface = IMG_Load("asset/NES-Bomberman-Playfield.png");
-    // if (!surface)
-    // {
-    //     printf("error creating surface\n");
-    //     SDL_DestroyRenderer(rend);
-    //     SDL_DestroyWindow(win);
-    //     SDL_Quit();
-    //     return 1;
-    // }
-    // SDL_Texture* tex2 = SDL_CreateTextureFromSurface(rend, surface);
-    // SDL_FreeSurface(surface);
+    surface = IMG_Load("asset/NESBombermanPlayfield_change.bmp");
 
-    surface = IMG_Load("asset/NES-Bomberman-Playfield.png");
+    //int mapW = surface->w;
+    //int mapH = surface->h;
+
+    printf("voici la width de map: %d", surface->w);
+    printf("voici la height de map: %d", surface->h);
+
     background = SDL_CreateTextureFromSurface(rend, surface);
     SDL_FreeSurface(surface);
 
-    surface = IMG_Load("asset/sprite_player.png");
+    surface = IMG_Load("asset/view1.png");
     player = SDL_CreateTextureFromSurface(rend, surface);
     SDL_FreeSurface(surface);
 
+
+
     //SDL_SetRenderDrawColor(rend,46,204,64,0.8);
 
-    // struct to hold the position and size of the sprite
+    // struct to hold the position and size of the spritec
     SDL_Rect dest;
-    SDL_Rect source;
 
     // get and scale the dimensions of texture
     //SDL_QueryTexture(tex2, NULL, NULL, NULL, NULL);
     SDL_QueryTexture(player, NULL, NULL, &dest.w, &dest.h);
 
-    // Initialisation du perso bomberman qui regarde en haut
-
-    // position dans l'image
-    source.y = dest.y = (float)(262/10)*1; // hauteur 18 = 1ere ligne
-    source.x = dest.x = (float)(310/17)*4; // largeur -> 17 px de largeur entre chaque slide
-    // gauche *3 larg
-    // haut 
-
-    //Format ok
-    source.w = dest.w = (float)310/18; // largeur
-    source.h = dest.h = (float)262/13; // hauteur
+    dest.w *= 19/16;
+    dest.h *= 32/17;
 
     // start sprite in center of screen
     float x_pos = (WINDOW_WIDTH - dest.w) / 2;
@@ -114,6 +189,8 @@ int map(void)
 
     // set to 1 when window close button is pressed
     int close_requested = 0;
+    
+    int touch;
 
     // animation loop
     while (!close_requested)
@@ -132,19 +209,85 @@ int map(void)
                 {
                 case SDL_SCANCODE_W:
                 case SDL_SCANCODE_UP:
-                    up = 1;
+                    printf("Salut voici ypos: %f \n", y_pos);
+                   fflush(stdout);
+                  up = 1;
+                        /*if(y_pos < 51)
+                        {
+                            up = 0;
+                        }else{
+
+                            up = 1;
+                        }*/
+                        if(checkWall(x_pos, y_pos) == 1)
+                        {
+                            up = 0;
+                        }else{
+                            up = 1;
+                        }
                     break;
                 case SDL_SCANCODE_A:
                 case SDL_SCANCODE_LEFT:
+                    printf("Salut voici xpos: %f \n", x_pos);
+                   fflush(stdout);
                     left = 1;
+                   /*if(x_pos<34)
+                   {
+                       left = 0;
+                   }else{
+
+                    left = 1;
+                   }*/
+
+                   if(checkWall(x_pos, y_pos) == 1)
+                   {
+                       left = 0;
+                   }else{
+                       left = 1;
+                   }
+
                     break;
                 case SDL_SCANCODE_S:
                 case SDL_SCANCODE_DOWN:
+                    printf("Salut voici ypos: %f \n", y_pos);
+                   fflush(stdout);
+                   down = 1;
+                   /* if(y_pos > 495)
+                    {
+                        down = 0;
+                    }else{
+
                     down = 1;
+                    }*/
+
+                    if(checkWall(x_pos, y_pos) == 1)
+                   {
+                       down = 0;
+                   }else{
+                       down = 1;
+                   }
                     break;
+
                 case SDL_SCANCODE_D:
                 case SDL_SCANCODE_RIGHT:
+                    printf("Salut voici xpos: %f \n", x_pos);
+                   fflush(stdout);
                     right = 1;
+                   /*if(x_pos > 745)
+                   {
+                    right = 0;
+                   }else{
+                    right = 1;
+
+                   }*/
+
+                   if(checkWall(x_pos, y_pos) == 1)
+                   {
+                       right = 0;
+                   }else{
+                       right = 1;
+                   }
+
                     break;
 
                     case SDL_SCANCODE_C: //Quitter en attendant d'avoir quelque chose de mieux
@@ -161,6 +304,8 @@ int map(void)
                 {
                 case SDL_SCANCODE_W:
                 case SDL_SCANCODE_UP:
+                    
+                    
                     up = 0;
                     break;
                 case SDL_SCANCODE_A:
@@ -169,6 +314,7 @@ int map(void)
                     break;
                 case SDL_SCANCODE_S:
                 case SDL_SCANCODE_DOWN:
+                    
                     down = 0;
                     break;
                 case SDL_SCANCODE_D:
@@ -182,32 +328,22 @@ int map(void)
 
         // determine velocity
         x_vel = y_vel = 0;
-        if (up && !down) {
-            source.x = (float)(310/17)*3;
-            source.y = (float)(262/10)*1;
-            y_vel = -SPEED;
-            
-        }
-        if (down && !up) {
-            source.x = (float)(310/17)*3;
-            source.y = (float)(262/10)*2;
-            y_vel = SPEED;
-        }
-        if (left && !right) {
-            x_vel = -SPEED;
-            source.x = (float)(310/17)*2;
-            source.y = (float)(262/10)*2;
-        }
-        if (right && !left) {
-            source.x = (float)(310/17)*6.8;
-            source.y = (float)(262/10)*2;
-            x_vel = SPEED;
-        }
+        if (up && !down) y_vel = -1;
+        if (down && !up) y_vel = 1;
+        if (left && !right) x_vel = -1;
+        if (right && !left) x_vel = 1;
+
 
         // update positions
-        x_pos += x_vel / 60;
-        y_pos += y_vel / 60;
+        x_pos += x_vel * TILE_WIDTH;
+        y_pos += y_vel * TILE_WIDTH;
 
+        if(x_pos > 800)
+        {
+            x_pos = x_pos + 0;
+        }
+        //touch =  checkMapEdge(dest.x, dest.y, surface->w, surface->h, mapW, mapH);
+        
         // collision detection with bounds
         if (x_pos <= 0) x_pos = 0;
         if (y_pos <= 0) y_pos = 0;
@@ -217,17 +353,18 @@ int map(void)
         // set the positions in the struct
         dest.y = (int) y_pos;
         dest.x = (int) x_pos;
+ 
 
         // clear the window
         SDL_RenderClear(rend);
 
         // draw the image to the window
         SDL_RenderCopy(rend, background, NULL, NULL);
-        SDL_RenderCopy(rend, player, &source, &dest);
+        SDL_RenderCopy(rend, player, NULL, &dest);
         SDL_RenderPresent(rend);
 
         // wait 1/60th of a second
-        SDL_Delay(1000/60);
+        SDL_Delay(100);
     }
 
     // clean up resources before exiting
@@ -239,27 +376,11 @@ int map(void)
 }
 
 
-
-
 // -------------------------- FIN MAP --------------------------
-
-
-
-
-// -- FIN SPRITE --//
-
-
-
-
-
 
 typedef enum {
 
     MAIN_MENUE,
-    INITIAL_MENU,
-    DOWN_MENU_1,
-    DOWN_MENU_2,
-    THIS,
     PLAY_SOLO,
     PLAY_AT_TWO,
     PLAY_AT_THREE,
@@ -269,54 +390,40 @@ typedef enum {
 int main(int argc, char const *argv[])
 {
     int run = 3;
-    int down = 0;
     SDL_Window *window = NULL;
     SDL_Renderer *render = NULL;
-    SDL_Surface* surface;
-    SDL_Texture* img;
-    SDL_Texture* start;
+    SDL_Surface *img = NULL;
+    SDL_Surface *img2 = NULL;
+    SDL_Texture *textur = NULL;
+
     SDL_Rect rectangle;
     SDL_Event event;
 
-    // attempt to initialize graphics and timer system
-    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
+    if(SDL_Init(SDL_INIT_VIDEO) != 0)
     {
-        printf("error initializing SDL: %s\n", SDL_GetError());
-        return 1;
+        SDL_Log("Error: init SDL > %s \n", SDL_GetError());
+        exit(EXIT_FAILURE);
     }
 
-    SDL_Window* win = SDL_CreateWindow("Bomberman",
-                                       SDL_WINDOWPOS_CENTERED,
-                                       SDL_WINDOWPOS_CENTERED,
-                                       WINDOW_WIDTH, WINDOW_HEIGHT,0);
-    if (!win)
+    window = SDL_CreateWindow("Bomberman!!!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+
+    if(window == NULL)
     {
-        printf("error creating window: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
+        SDL_Log("Error: screen can't be created > %s \n", SDL_GetError());
+        exit(EXIT_FAILURE);
     }
 
-    // create a renderer, which sets up the graphics hardware
-    Uint32 render_flags = SDL_RENDERER_ACCELERATED;
-    SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
-    if (!rend)
+    render = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+    if(render == NULL)
     {
-        printf("error creating renderer: %s\n", SDL_GetError());
-        SDL_DestroyWindow(win);
-        SDL_Quit();
-        return 1;
+        SDL_Log("Error: can't applied renderer > %s \n", SDL_GetError());
+        exit(EXIT_FAILURE);
     }
 
-        surface = IMG_Load("./asset/menu.png");
-        img = SDL_CreateTextureFromSurface(rend, surface);
-        SDL_FreeSurface(surface);
-
-        surface = IMG_Load("./asset/fleche.png");
-        start = SDL_CreateTextureFromSurface(rend, surface);
-        SDL_FreeSurface(surface);
-
-
-
+    img = SDL_LoadBMP("./asset/header.bmp");
+    img2 = SDL_LoadBMP("./asset/NES-Bomberman-Playfield.bmp");
+    //SDL_FreeSurface(img);
 
     if(img == NULL)
     {
@@ -326,33 +433,32 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-        if(start == NULL)
+    textur = SDL_CreateTextureFromSurface(render, img);
+
+    if(textur == NULL)
     {
-        SDL_Log("Error: can't load start img > %s \n", SDL_GetError());
+        SDL_Log("Error: can't load texture > %s \n", SDL_GetError());
         SDL_DestroyRenderer(render);
         SDL_DestroyWindow(window);
         exit(EXIT_FAILURE);
     }
 
+    if(SDL_QueryTexture(textur, NULL, NULL, &rectangle.w, &rectangle.h) != 0)
+    {
+        SDL_Log("Error: can't load texture > %s \n", SDL_GetError());
+        SDL_DestroyRenderer(render);
+        SDL_DestroyWindow(window);
+        exit(EXIT_FAILURE);
+    }
 
-    /* ok */
-
-        // struct to hold the position and size of the sprite
-    SDL_Rect dest;
-    SDL_Rect source;
-
-    // get and scale the dimensions of texture
-    //SDL_QueryTexture(tex2, NULL, NULL, NULL, NULL);
-    SDL_QueryTexture(start, NULL, NULL, &dest.w, &dest.h);
-
-    dest.x = 200;
-    dest.y = 180;
+    rectangle.x = (800 - rectangle.w) / 2;
+    rectangle.y = (600 - rectangle.h) /2;
 
     e_statMenue choiceUser;
 
     while(run)
     {
-        // SDL_RenderClear(rend);
+        SDL_RenderClear(render);
         SDL_PollEvent(&event);
 
         switch(event.type)
@@ -366,36 +472,11 @@ int main(int argc, char const *argv[])
                 {
                     case SDLK_ESCAPE:
                         run = 0;
-                        printf("escape");
                     break;
 
                     case SDLK_a:
                         choiceUser = PLAY_SOLO;
                     break;
-
-                    case SDLK_KP_ENTER: // ne marche pas sur mon pc
-                        choiceUser = THIS;
-                    break;
-
-                    case SDLK_d:
-                        choiceUser = THIS;
-                    break;
-
-                    case SDLK_s:
-                        if(down == 0)
-                        choiceUser = DOWN_MENU_1;
-                        if(down == 1)
-                        choiceUser = DOWN_MENU_2;
-                    break;
-
-                    case SDLK_z:
-                        if(down == 1)
-                            choiceUser = INITIAL_MENU;
-                        if(down == 2)
-                            choiceUser = DOWN_MENU_1;
-                        break;
-
-
 
                     default:
                        // printf("no case match");
@@ -411,49 +492,41 @@ int main(int argc, char const *argv[])
         switch(choiceUser)
         {
             case PLAY_SOLO:
-                SDL_DestroyRenderer(rend);
+                if(img2 == NULL)
+                {
+                    SDL_Log("Error: can't load img > %s \n", SDL_GetError());
+                    SDL_DestroyRenderer(render);
+                    SDL_DestroyWindow(window);
+                    exit(EXIT_FAILURE);
+                }
+                SDL_DestroyRenderer(render);
                 SDL_DestroyWindow(window);
                 map(); // display map
             break;
 
-            case INITIAL_MENU:
-                dest.y = 180;
-                down = 0;
-            break;
-
-            case DOWN_MENU_1:
-                dest.y = 280;
-                down = 1;
-            break;
-
-            case DOWN_MENU_2:
-                dest.y = 380;
-                down = 2;
-            break;
-
-            case THIS:
-                if(down == 0)
-                    choiceUser = PLAY_SOLO;
-                if(down == 2) // quit
-                    run = 0;
-            break;
-
             case MAIN_MENUE:
                 //Display img:
+                if(SDL_RenderCopy(render, textur, NULL, &rectangle) != 0)
+                {
+                    SDL_Log("Error: can't display texture > %s \n", SDL_GetError());
+                    SDL_DestroyRenderer(render);
+                    SDL_DestroyWindow(window);
+                    exit(EXIT_FAILURE);
+                }
             break;
 
             default:
 
             break;
         }
-        SDL_RenderPresent(rend);
-        
-        // draw the image to the window
-        SDL_RenderCopy(rend, img, NULL, NULL);
-        SDL_RenderCopy(rend, start, NULL, &dest);
+        SDL_RenderPresent(render);
     }
 
-    SDL_DestroyRenderer(rend);
+
+    SDL_RenderPresent(render);
+    //SDL_Delay(5000);
+
+    SDL_DestroyRenderer(render);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
