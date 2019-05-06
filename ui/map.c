@@ -1,131 +1,47 @@
-#include "helper.h"
+/**
+ * hello6_keyboard.c - Move the sprite using the arrow keys or WASD
+ */
 
-int tabTile [] = {
-                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
-                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
-                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
-                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
-                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
-                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
-                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
-                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
-                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
-                    0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
-                    0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
-                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+#include <stdio.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_image.h>
 
-                };
+#define WINDOW_WIDTH (600)
+#define WINDOW_HEIGHT (600)
 
-int tabTile2[13][31] = {
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+#define TILE_WIDTH 60
+#define TILE_HEIGHT 60
 
-                    };
+#define NUMBER_BLOCS_WIDTH 10
+#define NUMBER_BLOCS_HEIGHT 10
 
-int checkWall(float playerPosX, float playerPosY)
-{
-    //printf("Im in the function:");
-    int yValInt = (int) ((playerPosY * 30)/495);
-    int xValInt = (int) ((playerPosX * 12)/207);
-      printf("valeur xInt: %d\n \n", xValInt);
-       fflush(stdout);
-        printf("yValInt: %d\n \n", yValInt);
-         fflush(stdout);
-        printf("valeur retounre: %d\n \n", tabTile2[yValInt][xValInt]);
-
-    if(tabTile2[yValInt][xValInt] == 0)
-    {
-        printf("valeur retounre: %d\n \n", tabTile2[yValInt][xValInt]);
-       // printf("yValInt: %d\n \n", yValInt);
-        return 1;
-    }else{
-        return 0;
-    }
-}
-
-/*int checkMapEdge(float playerPosX, float playerPosY, int playerW, int playerH, int mapW, int mapH)
-{
-    printf("Im in the check \n");
-    fflush(stdout);
-
-     int indexRow;
-
-     printf("Value width of map: %d \n", mapW);
-    fflush(stdout);
-
-     double valDoubleX = (double) playerPosX;
-     double valDoubleY = (double) playerPosY;
-
-        printf("before floor \n");
-    fflush(stdout);
-
-     int valIntX = floor(valDoubleX)/16;
-     int valIntY = floor(valDoubleY)/16;
-
-     printf("valIntX: %d", valIntX);
-     fflush(stdout);
-
-    printf("valIntY: %d \n", valIntY);
-    fflush(stdout);
-
-     indexRow = valIntX + (mapW/16) * valIntY;
-
-     printf("valeur de indexRow: %d \n", indexRow);
-    fflush(stdout);
-
-    if(tabTile[indexRow] == 0)
-    {
-
-        return 1;
-    }else{
-        return 0;
-    }
-
-}*/
+// speed in pixels/second
+#define SPEED (300)
 
 int map(void)
 {
-  SDL_Surface* surface;
-  SDL_Texture* background;
-  SDL_Texture* player;
-
-  SDL_Texture* wall;
-  SDL_Texture* grass;
-
-
     // attempt to initialize graphics and timer system
-    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
     {
         printf("error initializing SDL: %s\n", SDL_GetError());
         return 1;
     }
 
-    SDL_Window* win = SDL_CreateWindow("Bomberman",
+    SDL_Window *win = SDL_CreateWindow("Bomberman",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       WINDOW_WIDTH, WINDOW_HEIGHT,0);
+                                       WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     if (!win)
     {
         printf("error creating window: %s\n", SDL_GetError());
         SDL_Quit();
-	    return 1;
+        return 1;
     }
 
     // create a renderer, which sets up the graphics hardware
     Uint32 render_flags = SDL_RENDERER_ACCELERATED;
-    SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
+    SDL_Renderer *rend = SDL_CreateRenderer(win, -1, render_flags);
     if (!rend)
     {
         printf("error creating renderer: %s\n", SDL_GetError());
@@ -134,38 +50,100 @@ int map(void)
         return 1;
     }
 
-    surface = IMG_Load("asset/NESBombermanPlayfield_change.bmp");
+    // load the image into memory using SDL_image library function
+    SDL_Surface *surface = IMG_Load("resources/view1.png");
+    if (!surface)
+    {
+        printf("error creating surface\n");
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
+        SDL_Quit();
+        return 1;
+    }
 
-    //int mapW = surface->w;
-    //int mapH = surface->h;
-
-    printf("voici la width de map: %d", surface->w);
-    printf("voici la height de map: %d", surface->h);
-
-    background = SDL_CreateTextureFromSurface(rend, surface);
+    // load the image data into the graphics hardware's memory
+    SDL_Texture *tex = SDL_CreateTextureFromSurface(rend, surface);
     SDL_FreeSurface(surface);
+    if (!tex)
+    {
+        printf("error creating texture: %s\n", SDL_GetError());
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
+        SDL_SDLQuit();
+        return 1;
+    }
 
-    surface = IMG_Load("asset/view1.png");
-    player = SDL_CreateTextureFromSurface(rend, surface);
-    SDL_FreeSurface(surface);
+    SDL_Surface *tileset = SDL_LoadBMP("resources/tileset1.bmp");
+    if (!tileset)
+    {
+        printf("error creating surface\n");
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
+        SDL_Quit();
+        return 1;
+    }
+    SDL_Texture *tilesetTexture = SDL_CreateTextureFromSurface(rend, tileset);
+    SDL_FreeSurface(tileset);
+    if (!tilesetTexture)
+    {
+        printf("error creating texture: %s\n", SDL_GetError());
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
+        SDL_Quit();
+        return 1;
+    }
 
+    // get and scale the dimensions of tileset texture
+    SDL_Rect tiles;
+    SDL_QueryTexture(tilesetTexture, NULL, NULL, &tiles.w, &tiles.h);
+    tiles.w = 120;
+    tiles.h = 120;
 
+    // displayObstacles(rend, tilesetTexture);
+    SDL_RenderClear(rend);
+    char *map[] = {
+        "0000000000",
+        "0111111100",
+        "0101010100",
+        "0111111100",
+        "0101010100",
+        "0111111100",
+        "0101010100",
+        "0111111100",
+        "0111111100",
+        "0000000000"};
+    int i, j;
+    SDL_Rect rect_dst;
+    SDL_Rect rect_src;
+    rect_src.w = TILE_WIDTH;
+    rect_src.h = TILE_HEIGHT;
+    for (i = 0; i < NUMBER_BLOCS_WIDTH; i++)
+    {
+        for (j = 0; j < NUMBER_BLOCS_HEIGHT; j++)
+        {
+            rect_dst.x = i * TILE_WIDTH;
+            rect_dst.y = j * TILE_HEIGHT;
+            rect_src.x = (map[j][i] - '0') * TILE_WIDTH;
+            rect_src.y = 0;
+            SDL_RenderCopy(rend, tilesetTexture, &rect_src, &rect_dst);
+        }
+    }
+    SDL_RenderPresent(rend);
 
-    //SDL_SetRenderDrawColor(rend,46,204,64,0.8);
-
-    // struct to hold the position and size of the spritec
+    // struct to hold the position and size of the sprite
     SDL_Rect dest;
-
     // get and scale the dimensions of texture
-    //SDL_QueryTexture(tex2, NULL, NULL, NULL, NULL);
-    SDL_QueryTexture(player, NULL, NULL, &dest.w, &dest.h);
+    SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+    dest.w = 40;
+    dest.h = 40;
 
-    dest.w *= 19/16;
-    dest.h *= 32/17;
+    printf("Player dimension : [%d, %d]", dest.w, dest.h);
+    fflush(stdout);
 
     // start sprite in center of screen
-    float x_pos = (WINDOW_WIDTH - dest.w) / 2;
-    float y_pos = (WINDOW_HEIGHT - dest.h) / 2;
+    float x_pos_old, y_pos_old = 0;
+    float x_pos = 60; //(WINDOW_WIDTH - dest.w) / 2;
+    float y_pos = 60; //(WINDOW_HEIGHT - dest.h) / 2;
     float x_vel = 0;
     float y_vel = 0;
 
@@ -175,10 +153,14 @@ int map(void)
     int left = 0;
     int right = 0;
 
+    int nb_grid_x = 0;
+    int nb_grid_y = 0;
+    float r_x = 0;
+    float r_y = 0;
+    int step_x = 0;
+    int step_y = 0;
     // set to 1 when window close button is pressed
     int close_requested = 0;
-    
-    int touch;
 
     // animation loop
     while (!close_requested)
@@ -197,93 +179,19 @@ int map(void)
                 {
                 case SDL_SCANCODE_W:
                 case SDL_SCANCODE_UP:
-                    printf("Salut voici ypos: %f \n", y_pos);
-                   fflush(stdout);
-                  up = 1;
-                        /*if(y_pos < 51)
-                        {
-                            up = 0;
-                        }else{
-
-                            up = 1;
-                        }*/
-                        if(checkWall(x_pos, y_pos) == 1)
-                        {
-                            up = 0;
-                        }else{
-                            up = 1;
-                        }
+                    up = 1;
                     break;
                 case SDL_SCANCODE_A:
                 case SDL_SCANCODE_LEFT:
-                    printf("Salut voici xpos: %f \n", x_pos);
-                   fflush(stdout);
                     left = 1;
-                   /*if(x_pos<34)
-                   {
-                       left = 0;
-                   }else{
-
-                    left = 1;
-                   }*/
-
-                   if(checkWall(x_pos, y_pos) == 1)
-                   {
-                       left = 0;
-                   }else{
-                       left = 1;
-                   }
-
                     break;
                 case SDL_SCANCODE_S:
                 case SDL_SCANCODE_DOWN:
-                    printf("Salut voici ypos: %f \n", y_pos);
-                   fflush(stdout);
-                   down = 1;
-                   /* if(y_pos > 495)
-                    {
-                        down = 0;
-                    }else{
-
                     down = 1;
-                    }*/
-
-                    if(checkWall(x_pos, y_pos) == 1)
-                   {
-                       down = 0;
-                   }else{
-                       down = 1;
-                   }
                     break;
-
                 case SDL_SCANCODE_D:
                 case SDL_SCANCODE_RIGHT:
-                    printf("Salut voici xpos: %f \n", x_pos);
-                   fflush(stdout);
                     right = 1;
-                   /*if(x_pos > 745)
-                   {
-                    right = 0;
-                   }else{
-                    right = 1;
-
-                   }*/
-
-                   if(checkWall(x_pos, y_pos) == 1)
-                   {
-                       right = 0;
-                   }else{
-                       right = 1;
-                   }
-
-                    break;
-
-                    case SDL_SCANCODE_C: //Quitter en attendant d'avoir quelque chose de mieux
-                    SDL_DestroyTexture(player);
-                    SDL_DestroyRenderer(rend);
-                    SDL_DestroyWindow(win);
-                    SDL_Quit();
-                    exit(EXIT_SUCCESS);
                     break;
                 }
                 break;
@@ -292,8 +200,6 @@ int map(void)
                 {
                 case SDL_SCANCODE_W:
                 case SDL_SCANCODE_UP:
-                    
-                    
                     up = 0;
                     break;
                 case SDL_SCANCODE_A:
@@ -302,7 +208,6 @@ int map(void)
                     break;
                 case SDL_SCANCODE_S:
                 case SDL_SCANCODE_DOWN:
-                    
                     down = 0;
                     break;
                 case SDL_SCANCODE_D:
@@ -316,49 +221,83 @@ int map(void)
 
         // determine velocity
         x_vel = y_vel = 0;
-        if (up && !down) y_vel = -1;
-        if (down && !up) y_vel = 1;
-        if (left && !right) x_vel = -1;
-        if (right && !left) x_vel = 1;
-
+        if (up && !down && !left && !right)
+            y_vel = -SPEED;
+        if (down && !up && !left && !right)
+            y_vel = SPEED;
+        if (left && !right && !down && !up)
+            x_vel = -SPEED;
+        if (right && !left && !down && !up)
+            x_vel = SPEED;
 
         // update positions
-        x_pos += x_vel * TILE_WIDTH;
-        y_pos += y_vel * TILE_WIDTH;
+        x_pos_old = x_pos;
+        y_pos_old = y_pos;
+        x_pos += x_vel / 60;
+        y_pos += y_vel / 60;
 
-        if(x_pos > 800)
-        {
-            x_pos = x_pos + 0;
-        }
-        //touch =  checkMapEdge(dest.x, dest.y, surface->w, surface->h, mapW, mapH);
-        
         // collision detection with bounds
-        if (x_pos <= 0) x_pos = 0;
-        if (y_pos <= 0) y_pos = 0;
-        if (x_pos >= WINDOW_WIDTH - dest.w) x_pos = WINDOW_WIDTH - dest.w;
-        if (y_pos >= WINDOW_HEIGHT - dest.h) y_pos = WINDOW_HEIGHT - dest.h;
+        if (x_pos <= 0)
+            x_pos = 0;
+        if (y_pos <= 0)
+            y_pos = 0;
+        if (x_pos >= WINDOW_WIDTH - dest.w)
+            x_pos = WINDOW_WIDTH - dest.w;
+        if (y_pos >= WINDOW_HEIGHT - dest.h)
+            y_pos = WINDOW_HEIGHT - dest.h;
+        nb_grid_x = (int)(x_pos / TILE_WIDTH);
+        r_x = x_pos - nb_grid_x * TILE_WIDTH;
+        step_x = step_y = 0;
+        if (r_x > TILE_WIDTH - dest.w)
+        {
+            step_x += 1;
+        }
+        nb_grid_y = (int)(y_pos / TILE_HEIGHT);
+        r_y = y_pos - nb_grid_y * TILE_HEIGHT;
+        if (r_y > TILE_HEIGHT - dest.h)
+        {
+            step_y += 1;
+        }
+        printf("GRID : [%d, %d] => %c\n", (int)(y_pos / TILE_HEIGHT) + step_y, (int)(x_pos / TILE_WIDTH) + step_x, map[(int)(y_pos / TILE_HEIGHT) + step_y][(int)(x_pos / TILE_WIDTH) + step_x]);
+        if (map[(int)(y_pos / TILE_HEIGHT) + step_y][(int)(x_pos / TILE_WIDTH) + step_x] == '0' || map[(int)(y_pos / TILE_HEIGHT)][(int)(x_pos / TILE_WIDTH) + step_x] == '0' || map[(int)(y_pos / TILE_HEIGHT) + step_y][(int)(x_pos / TILE_WIDTH)] == '0' || map[(int)(y_pos / TILE_HEIGHT)][(int)(x_pos / TILE_WIDTH)] == '0')
+        {
+            x_pos = x_pos_old;
+            y_pos = y_pos_old;
+        }
+        else
+        {
+            // set the positions in the struct
+            dest.y = (int)y_pos;
+            dest.x = (int)x_pos;
+            // printf("[x_pos, y_pos] : [%d, %d]", dest.x, dest.y);
 
-        // set the positions in the struct
-        dest.y = (int) y_pos;
-        dest.x = (int) x_pos;
- 
-
-        // clear the window
-        SDL_RenderClear(rend);
-
-        // draw the image to the window
-        SDL_RenderCopy(rend, background, NULL, NULL);
-        SDL_RenderCopy(rend, player, NULL, &dest);
-        SDL_RenderPresent(rend);
-
+            // clear the window
+            SDL_RenderClear(rend);
+            // displayObstacles(rend, tilesetTexture);
+            for (i = 0; i < NUMBER_BLOCS_WIDTH; i++)
+            {
+                for (j = 0; j < NUMBER_BLOCS_HEIGHT; j++)
+                {
+                    rect_dst.x = i * TILE_WIDTH;
+                    rect_dst.y = j * TILE_HEIGHT;
+                    rect_src.x = (map[j][i] - '0') * TILE_WIDTH;
+                    rect_src.y = 0;
+                    SDL_RenderCopy(rend, tilesetTexture, &rect_src, &rect_dst);
+                }
+            }
+            // draw the image to the window
+            SDL_RenderCopy(rend, tex, NULL, &dest);
+            SDL_RenderPresent(rend);
+            SDL_RenderPresent(rend);
+        }
         // wait 1/60th of a second
-        SDL_Delay(100);
+        SDL_Delay(1000 / 60);
     }
 
     // clean up resources before exiting
-    SDL_DestroyTexture(player);
-    SDL_DestroyTexture(background);
+    SDL_DestroyTexture(tex);
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
     SDL_Quit();
+    return 0;
 }
