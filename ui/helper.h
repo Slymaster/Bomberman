@@ -5,11 +5,14 @@
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
+#include <math.h>
+#include <stdlib.h>
 
-#define WINDOW_WIDTH (800)
-#define WINDOW_HEIGHT (600)
+#define WINDOW_WIDTH (992)
+#define WINDOW_HEIGHT (416)
 
 // speed in pixels/second
-#define SPEED (120)
+#define SPEED (300)
+#define TILE_WIDTH (32)
 
 #endif
