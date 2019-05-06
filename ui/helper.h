@@ -15,4 +15,6 @@
 #define SPEED (300)
 #define TILE_WIDTH (32)
 
+int map();
+
 #endif
