@@ -2,7 +2,7 @@
 
 int map(void)
 {
-    // attempt to initialize graphics and timer system
+   // attempt to initialize graphics and timer system
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
     {
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -50,11 +50,11 @@ int map(void)
         printf("error creating texture: %s\n", SDL_GetError());
         SDL_DestroyRenderer(rend);
         SDL_DestroyWindow(win);
-        SDL_SDLQuit();
+        SDL_Quit();
         return 1;
     }
 
-    SDL_Surface *tileset = SDL_LoadBMP("resources/tileset1.bmp");
+    SDL_Surface *tileset = SDL_LoadBMP("resources/unnamed.bmp");
     if (!tileset)
     {
         printf("error creating surface\n");
@@ -77,12 +77,12 @@ int map(void)
     // get and scale the dimensions of tileset texture
     SDL_Rect tiles;
     SDL_QueryTexture(tilesetTexture, NULL, NULL, &tiles.w, &tiles.h);
-    tiles.w = 120;
-    tiles.h = 120;
+    tiles.w = 16;
+    tiles.h = 16;
 
     // displayObstacles(rend, tilesetTexture);
     SDL_RenderClear(rend);
-    char *map[] = {
+    /*char *map[] = {
         "0000000000",
         "0111111100",
         "0101010100",
@@ -92,7 +92,24 @@ int map(void)
         "0101010100",
         "0111111100",
         "0111111100",
-        "0000000000"};
+        "0000000000"};*/
+
+    char *map[] = {
+        "0000000000000000000000000000000",
+        "0111111111111111111111111111110",
+        "0101010101010101010101010101010",
+        "0111111111111111111111111111110",
+        "0101010101010101010101010101010",
+        "0111111111111111111111111111110",
+        "0101010101010101010101010101010",
+        "0111111111111111111111111111110",
+        "0101010101010101010101010101010",
+        "0111111111111111111111111111110",
+        "0101010101010101010101010101010",
+        "0111111111111111111111111111110",
+        "0000000000000000000000000000000"
+    };
+
     int i, j;
     SDL_Rect rect_dst;
     SDL_Rect rect_src;
@@ -115,16 +132,16 @@ int map(void)
     SDL_Rect dest;
     // get and scale the dimensions of texture
     SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
-    dest.w = 40;
-    dest.h = 40;
+    dest.w = 9;
+    dest.h = 16;
 
     printf("Player dimension : [%d, %d]", dest.w, dest.h);
     fflush(stdout);
 
     // start sprite in center of screen
     float x_pos_old, y_pos_old = 0;
-    float x_pos = 60; //(WINDOW_WIDTH - dest.w) / 2;
-    float y_pos = 60; //(WINDOW_HEIGHT - dest.h) / 2;
+    float x_pos = (WINDOW_WIDTH - dest.w) / 2; //(WINDOW_WIDTH - dest.w) / 2;
+    float y_pos = (WINDOW_HEIGHT - dest.h) / 2; //(WINDOW_HEIGHT - dest.h) / 2;
     float x_vel = 0;
     float y_vel = 0;
 
