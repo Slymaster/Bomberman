@@ -3,6 +3,7 @@ Le projet consiste en la réalisation d'un clone du célèbre bomberman multijou
 Affichage du menu
 
 # :books: Compilation
+Makefile
 gcc main.c -lSDL2 -lSDL2_image \`sdl2-config --cflags --libs\`
 
 # Navigation
