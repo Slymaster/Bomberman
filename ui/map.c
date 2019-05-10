@@ -1,6 +1,83 @@
+#include <stdio.h>
 #include "helper.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_image.h>
 
-int map(void)
+#define WINDOW_WIDTH (496)
+#define WINDOW_HEIGHT (208)
+
+#define TILE_WIDTH 16
+#define TILE_HEIGHT 16
+
+#define NUMBER_BLOCS_WIDTH 31
+#define NUMBER_BLOCS_HEIGHT 13
+
+// speed in pixels/second
+#define SPEED (300)
+
+
+
+int putBomb(void* renderer)
+{
+    SDL_Delay(3000);
+
+    SDL_Surface* bombSurface;
+    SDL_Texture* bombTexture;
+    //SDL_Rect bombRect;
+
+    SDL_Renderer *rend = (SDL_Renderer*) renderer;
+
+    if (!rend)
+    {
+        printf("error creating renderer: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 1;
+    }
+ 
+    bombSurface = IMG_Load("resources/bomb.png");
+
+    if(!bombSurface)
+    {
+         printf("error creating surface\n");
+         SDL_DestroyRenderer(rend);
+         return 1;
+
+    }
+
+    //SDL_FreeSurface(bombSurface);
+
+    /*bombSurface->w = 1;
+    bombSurface->h = 1;*/
+
+    bombTexture = SDL_CreateTextureFromSurface(rend, bombSurface);
+
+    if (!bombTexture)
+    {
+        printf("error creating texture: %s\n", SDL_GetError());
+        SDL_DestroyRenderer(rend);
+        return 1;
+    }
+
+    SDL_Rect bombRect = {1, 1, TILE_WIDTH, TILE_HEIGHT};
+    
+    SDL_QueryTexture(bombTexture, NULL, NULL, &bombRect.w, &bombRect.h);
+
+    bombRect.w = 4;
+    bombRect.h =4;
+
+    SDL_RenderCopy(rend, bombTexture, NULL, &bombRect);
+    SDL_RenderPresent(rend);
+
+   // SDL_Delay(3000);
+    //SDL_DestroyTexture(bombTexture);
+    //SDL_RenderClear(rend);
+
+    //pthread_exit(NULL);
+    return 1;
+}
+
+int map()
 {
    // attempt to initialize graphics and timer system
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
@@ -32,7 +109,7 @@ int map(void)
     }
 
     // load the image into memory using SDL_image library function
-    SDL_Surface *surface = IMG_Load("resources/view1.png");
+    SDL_Surface *surface = IMG_Load("asset/view1.png");
     if (!surface)
     {
         printf("error creating surface\n");
@@ -54,7 +131,7 @@ int map(void)
         return 1;
     }
 
-    SDL_Surface *tileset = SDL_LoadBMP("resources/unnamed.bmp");
+    SDL_Surface *tileset = SDL_LoadBMP("asset/unnamed.bmp");
     if (!tileset)
     {
         printf("error creating surface\n");
@@ -77,22 +154,11 @@ int map(void)
     // get and scale the dimensions of tileset texture
     SDL_Rect tiles;
     SDL_QueryTexture(tilesetTexture, NULL, NULL, &tiles.w, &tiles.h);
-    tiles.w = 16;
-    tiles.h = 16;
+    tiles.w = TILE_WIDTH;
+    tiles.h = TILE_WIDTH;
 
     // displayObstacles(rend, tilesetTexture);
     SDL_RenderClear(rend);
-    /*char *map[] = {
-        "0000000000",
-        "0111111100",
-        "0101010100",
-        "0111111100",
-        "0101010100",
-        "0111111100",
-        "0101010100",
-        "0111111100",
-        "0111111100",
-        "0000000000"};*/
 
     char *map[] = {
         "0000000000000000000000000000000",
@@ -133,7 +199,7 @@ int map(void)
     // get and scale the dimensions of texture
     SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
     dest.w = 9;
-    dest.h = 16;
+    dest.h = 9;
 
     printf("Player dimension : [%d, %d]", dest.w, dest.h);
     fflush(stdout);
@@ -159,6 +225,10 @@ int map(void)
     int step_y = 0;
     // set to 1 when window close button is pressed
     int close_requested = 0;
+    //pthread_t my_thread;
+
+    SDL_Thread *putBombThread;
+    int threadValue;
 
     // animation loop
     while (!close_requested)
@@ -190,6 +260,21 @@ int map(void)
                 case SDL_SCANCODE_D:
                 case SDL_SCANCODE_RIGHT:
                     right = 1;
+                    break;
+                
+                case SDL_SCANCODE_B:
+                   /* pthread_create(&my_thread, NULL, putBomb, &rend);
+                    pthread_join(my_thread, NULL);*/
+                    //putBomb(x_pos, y_pos, rend);
+
+                    putBombThread = SDL_CreateThread(putBomb, "putBomb", &rend);
+
+                    if(NULL == putBombThread)
+                    {
+                        printf("error creating thread: %s\n", SDL_GetError());
+                    }else{
+                        SDL_WaitThread(putBombThread, &threadValue);
+                    }
                     break;
                 }
                 break;
@@ -256,7 +341,7 @@ int map(void)
         {
             step_y += 1;
         }
-        printf("GRID : [%d, %d] => %c\n", (int)(y_pos / TILE_HEIGHT) + step_y, (int)(x_pos / TILE_WIDTH) + step_x, map[(int)(y_pos / TILE_HEIGHT) + step_y][(int)(x_pos / TILE_WIDTH) + step_x]);
+        //printf("GRID : [%d, %d] => %c\n", (int)(y_pos / TILE_HEIGHT) + step_y, (int)(x_pos / TILE_WIDTH) + step_x, map[(int)(y_pos / TILE_HEIGHT) + step_y][(int)(x_pos / TILE_WIDTH) + step_x]);
         if (map[(int)(y_pos / TILE_HEIGHT) + step_y][(int)(x_pos / TILE_WIDTH) + step_x] == '0' || map[(int)(y_pos / TILE_HEIGHT)][(int)(x_pos / TILE_WIDTH) + step_x] == '0' || map[(int)(y_pos / TILE_HEIGHT) + step_y][(int)(x_pos / TILE_WIDTH)] == '0' || map[(int)(y_pos / TILE_HEIGHT)][(int)(x_pos / TILE_WIDTH)] == '0')
         {
             x_pos = x_pos_old;
