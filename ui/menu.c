@@ -1,51 +1,53 @@
 #include "helper.h"
 
-typedef enum {
-
-    MAIN_MENUE,
-    PLAY_SOLO,
-    PLAY_AT_TWO,
-    PLAY_AT_THREE,
-    PLAY_AT_FOUR
-}e_statMenue;
-
 int main(int argc, char const *argv[])
 {
     int run = 3;
+    int down = 0;
     SDL_Window *window = NULL;
     SDL_Renderer *render = NULL;
-    SDL_Surface *img = NULL;
-    SDL_Surface *img2 = NULL;
-    SDL_Texture *textur = NULL;
-
+    SDL_Surface* surface;
+    SDL_Texture* img;
+    SDL_Texture* start;
     SDL_Rect rectangle;
     SDL_Event event;
 
-    if(SDL_Init(SDL_INIT_VIDEO) != 0)
+    // attempt to initialize graphics and timer system
+    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
     {
-        SDL_Log("Error: init SDL > %s \n", SDL_GetError());
-        exit(EXIT_FAILURE);
+        printf("error initializing SDL: %s\n", SDL_GetError());
+        return 1;
     }
 
-    window = SDL_CreateWindow("Bomberman!!!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
-
-    if(window == NULL)
+    SDL_Window* win = SDL_CreateWindow("Bomberman",
+                                       SDL_WINDOWPOS_CENTERED,
+                                       SDL_WINDOWPOS_CENTERED,
+                                       557, 608, 0);
+    if (!win)
     {
-        SDL_Log("Error: screen can't be created > %s \n", SDL_GetError());
-        exit(EXIT_FAILURE);
+        printf("error creating window: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 1;
     }
 
-    render = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-
-    if(render == NULL)
+    // create a renderer, which sets up the graphics hardware
+    Uint32 render_flags = SDL_RENDERER_ACCELERATED;
+    SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
+    if (!rend)
     {
-        SDL_Log("Error: can't applied renderer > %s \n", SDL_GetError());
-        exit(EXIT_FAILURE);
+        printf("error creating renderer: %s\n", SDL_GetError());
+        SDL_DestroyWindow(win);
+        SDL_Quit();
+        return 1;
     }
 
-    img = SDL_LoadBMP("./asset/header.bmp");
-    img2 = SDL_LoadBMP("./asset/NES-Bomberman-Playfield.bmp");
-    //SDL_FreeSurface(img);
+        surface = IMG_Load("./asset/initial_menu.png");
+        img = SDL_CreateTextureFromSurface(rend, surface);
+        SDL_FreeSurface(surface);
+
+        surface = IMG_Load("./asset/fleche.png");
+        start = SDL_CreateTextureFromSurface(rend, surface);
+        SDL_FreeSurface(surface);
 
     if(img == NULL)
     {
@@ -55,32 +57,30 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    textur = SDL_CreateTextureFromSurface(render, img);
-
-    if(textur == NULL)
+        if(start == NULL)
     {
-        SDL_Log("Error: can't load texture > %s \n", SDL_GetError());
+        SDL_Log("Error: can't load start img > %s \n", SDL_GetError());
         SDL_DestroyRenderer(render);
         SDL_DestroyWindow(window);
         exit(EXIT_FAILURE);
     }
 
-    if(SDL_QueryTexture(textur, NULL, NULL, &rectangle.w, &rectangle.h) != 0)
-    {
-        SDL_Log("Error: can't load texture > %s \n", SDL_GetError());
-        SDL_DestroyRenderer(render);
-        SDL_DestroyWindow(window);
-        exit(EXIT_FAILURE);
-    }
+    // struct to hold the position and size of the sprite
+    SDL_Rect dest;
+    SDL_Rect source;
 
-    rectangle.x = (800 - rectangle.w) / 2;
-    rectangle.y = (600 - rectangle.h) /2;
+    // get and scale the dimensions of texture
+    //SDL_QueryTexture(tex2, NULL, NULL, NULL, NULL);
+    SDL_QueryTexture(start, NULL, NULL, &dest.w, &dest.h);
+
+    dest.x = 0;
+    dest.y = 0;
 
     e_statMenue choiceUser;
 
     while(run)
     {
-        SDL_RenderClear(render);
+        // SDL_RenderClear(rend);
         SDL_PollEvent(&event);
 
         switch(event.type)
@@ -94,11 +94,46 @@ int main(int argc, char const *argv[])
                 {
                     case SDLK_ESCAPE:
                         run = 0;
+                        printf("escape");
                     break;
 
                     case SDLK_a:
                         choiceUser = PLAY_SOLO;
                     break;
+
+                    case SDL_SCANCODE_KP_ENTER:
+                    case SDLK_KP_ENTER: // ne marche pas sur mon pc
+                        choiceUser = THIS;
+                        printf("enter");
+                    break;
+
+                    case SDLK_d:
+                        choiceUser = THIS;
+                    break;
+
+                    case SDLK_DOWN:
+                    case SDLK_s:
+                        puts("down");
+                        if(down == 0)
+                            choiceUser = DOWN_MENU_1;
+                        if(down == 1)
+                            choiceUser = DOWN_MENU_2;
+                        if(down == 2)
+                            choiceUser = DOWN_MENU_3;
+                        break;
+
+                    case SDLK_UP:
+                    case SDLK_z:
+                        puts("up");
+                        if(down == 1)
+                            choiceUser = INITIAL_MENU;
+                        if(down == 2)
+                            choiceUser = OPTIONS;
+                        if(down == 3)
+                            choiceUser = DOWN_MENU_2;
+                        break;
+
+
 
                     default:
                        // printf("no case match");
@@ -114,41 +149,62 @@ int main(int argc, char const *argv[])
         switch(choiceUser)
         {
             case PLAY_SOLO:
-                if(img2 == NULL)
-                {
-                    SDL_Log("Error: can't load img > %s \n", SDL_GetError());
-                    SDL_DestroyRenderer(render);
-                    SDL_DestroyWindow(window);
-                    exit(EXIT_FAILURE);
-                }
-                SDL_DestroyRenderer(render);
+                SDL_DestroyRenderer(rend);
                 SDL_DestroyWindow(window);
+                SDL_Quit();
                 map(); // display map
+            break;
+
+            case OPTIONS:
+                SDL_DestroyRenderer(rend);
+                SDL_DestroyWindow(window);
+                SDL_Quit();
+                menu_options(); // display options
+            break;
+
+            case INITIAL_MENU:
+                dest.y = 0;
+                down = 0;
+            break;
+
+            case DOWN_MENU_1:
+                dest.y = 150;
+                down = 1;
+            break;
+
+            case DOWN_MENU_2:
+                dest.y = 300;
+                down = 2;
+            break;
+
+            case DOWN_MENU_3:
+                dest.y = 450;
+                down = 3;
+            break;
+
+            case THIS:
+                if(down == 0)
+                    choiceUser = PLAY_SOLO;
+                if(down == 3) // quit
+                    run = 0;
             break;
 
             case MAIN_MENUE:
                 //Display img:
-                if(SDL_RenderCopy(render, textur, NULL, &rectangle) != 0)
-                {
-                    SDL_Log("Error: can't display texture > %s \n", SDL_GetError());
-                    SDL_DestroyRenderer(render);
-                    SDL_DestroyWindow(window);
-                    exit(EXIT_FAILURE);
-                }
             break;
 
             default:
 
             break;
         }
-        SDL_RenderPresent(render);
+        SDL_RenderPresent(rend);
+        
+        // draw the image to the window
+        SDL_RenderCopy(rend, img, NULL, NULL);
+        SDL_RenderCopy(rend, start, NULL, &dest);
     }
 
-
-    SDL_RenderPresent(render);
-    //SDL_Delay(5000);
-
-    SDL_DestroyRenderer(render);
+    SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(window);
     SDL_Quit();
 

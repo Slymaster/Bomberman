@@ -18,6 +18,21 @@
 // speed in pixels/second
 #define SPEED (300)
 
+typedef enum {
+    MAIN_MENUE,
+    INITIAL_MENU,
+    DOWN_MENU_1,
+    DOWN_MENU_2,
+    DOWN_MENU_3,
+    THIS,
+    PLAY_SOLO,
+    OPTIONS,
+    PLAY_AT_TWO,
+    PLAY_AT_THREE,
+    PLAY_AT_FOUR
+} e_statMenue;
+
 int map();
+int menu_options();
 
 #endif
