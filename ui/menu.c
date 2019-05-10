@@ -159,7 +159,7 @@ int main(int argc, char const *argv[])
                 SDL_DestroyRenderer(rend);
                 SDL_DestroyWindow(window);
                 SDL_Quit();
-                menu_options(); // display options
+                //menu_options(); // display options
             break;
 
             case INITIAL_MENU:
