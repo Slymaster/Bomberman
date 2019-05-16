@@ -1,4 +1,4 @@
-# :boom: Bomberman
+# 💣 Bomberman
 
 # Liens utiles:
 
