@@ -27,7 +27,10 @@ typedef enum {
     DOWN_MENU_3,
     THIS,
     PLAY_SOLO,
+    MULTIPLAYER,
     OPTIONS,
+    RETURN,
+    QUIT,
     PLAY_AT_TWO,
     PLAY_AT_THREE,
     PLAY_AT_FOUR
@@ -64,8 +67,14 @@ typedef struct
     SDL_TimerID timerId;
 }Bomb;
 
-int map();
+int main();
+
+/* Menu */
+int menu_default();
+int menu_multiplayer();
 int menu_options();
+
+int map();
 Uint32 blastBomb(Uint32 time, void *voidBomb);
 Bomb *putBomb(float x_pos, float y_pos, SDL_Renderer *rend);
 Player *loadPlayer(SDL_Renderer *rend, SDL_Window *win);

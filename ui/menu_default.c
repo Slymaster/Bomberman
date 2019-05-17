@@ -1,6 +1,6 @@
 #include "helper.h"
 
-int main(int argc, char const *argv[])
+int menu_default()
 {
     int run = 3;
     int down = 0;
@@ -11,6 +11,8 @@ int main(int argc, char const *argv[])
     SDL_Texture* start;
     SDL_Rect rectangle;
     SDL_Event event;
+
+    puts("Menu par défaut");
 
     // attempt to initialize graphics and timer system
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
@@ -98,7 +100,14 @@ int main(int argc, char const *argv[])
                     break;
 
                     case SDLK_a:
-                        choiceUser = PLAY_SOLO;
+                                        SDL_DestroyRenderer(rend);
+                SDL_DestroyWindow(window);
+                SDL_Quit();
+                        map();
+                    break;
+
+                    case SDLK_e:
+                        choiceUser = MULTIPLAYER;
                     break;
 
                     case SDL_SCANCODE_KP_ENTER:
@@ -113,7 +122,6 @@ int main(int argc, char const *argv[])
 
                     case SDLK_DOWN:
                     case SDLK_s:
-                        puts("down");
                         if(down == 0)
                             choiceUser = DOWN_MENU_1;
                         if(down == 1)
@@ -124,11 +132,10 @@ int main(int argc, char const *argv[])
 
                     case SDLK_UP:
                     case SDLK_z:
-                        puts("up");
                         if(down == 1)
                             choiceUser = INITIAL_MENU;
                         if(down == 2)
-                            choiceUser = OPTIONS;
+                            choiceUser = DOWN_MENU_1;
                         if(down == 3)
                             choiceUser = DOWN_MENU_2;
                         break;
@@ -149,17 +156,30 @@ int main(int argc, char const *argv[])
         switch(choiceUser)
         {
             case PLAY_SOLO:
+            //    SDL_DestroyRenderer(rend);
+            //    SDL_DestroyWindow(window);
+            //    SDL_Quit();
+                //map(); // display map
+            break;
+
+            case MULTIPLAYER:
                 SDL_DestroyRenderer(rend);
                 SDL_DestroyWindow(window);
                 SDL_Quit();
-                map(); // display map
+                menu_multiplayer(); // display options
             break;
 
             case OPTIONS:
                 SDL_DestroyRenderer(rend);
                 SDL_DestroyWindow(window);
                 SDL_Quit();
-                //menu_options(); // display options
+                menu_options(); // display options
+            break;
+
+                        case QUIT:
+                SDL_DestroyRenderer(rend);
+                SDL_DestroyWindow(window);
+                SDL_Quit();
             break;
 
             case INITIAL_MENU:
@@ -185,8 +205,12 @@ int main(int argc, char const *argv[])
             case THIS:
                 if(down == 0)
                     choiceUser = PLAY_SOLO;
+                if(down == 1)
+                    choiceUser = MULTIPLAYER;
+                if(down == 2)
+                    choiceUser = OPTIONS;
                 if(down == 3) // quit
-                    run = 0;
+                    choiceUser = QUIT;
             break;
 
             case MAIN_MENUE:
