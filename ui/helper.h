@@ -19,6 +19,9 @@
 // speed in pixels/second
 #define SPEED (300)
 
+enum BombState { NOT_EXPLODED, EXPLODING, EXPLODED };
+typedef enum { FALSY = 0, TRUTHY = 1} Flag;
+
 typedef enum {
     MAIN_MENUE,
     INITIAL_MENU,
@@ -47,10 +50,6 @@ typedef struct
     SDL_Rect bombRect;
 }Player;
 
-enum BombState { NOT_EXPLODED, EXPLODING, EXPLODED };
-
-typedef enum { FALSY = 0, TRUTHY = 1} Flag;
-
 typedef struct
 {
     enum BombState state;
@@ -67,6 +66,17 @@ typedef struct
     SDL_TimerID timerId;
 }Bomb;
 
+typedef struct
+{
+    float x_pos;
+    float y_pos;
+    float width;
+    float height;
+    SDL_Surface *fireSurface;
+    SDL_Texture *fireTexture;
+    SDL_Rect fireRect;
+}Fire;
+
 int main();
 
 /* Menu */
@@ -78,5 +88,6 @@ int map();
 Uint32 blastBomb(Uint32 time, void *voidBomb);
 Bomb *putBomb(float x_pos, float y_pos, SDL_Renderer *rend);
 Player *loadPlayer(SDL_Renderer *rend, SDL_Window *win);
+Fire* drawFire(float bombPosX, float bombPosY, SDL_Renderer *rend, SDL_Window *win);
 
 #endif

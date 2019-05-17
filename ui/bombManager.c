@@ -1,6 +1,45 @@
 #include "helper.h"
 
 
+Fire* drawFire(float bombPosX, float bombPosY, SDL_Renderer *rend, SDL_Window *win)
+{
+    Fire *fire;
+    fire = malloc(sizeof(Fire));
+
+    if (fire == NULL)
+    {
+        printf("Error creating fire struct\n");
+        return NULL;
+    }
+
+    fire->fireSurface = IMG_Load("asset/fire_center_sprite.png");
+
+    if(!fire->fireSurface)
+    {
+        printf("error creating surface fireSurface\n");
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
+        return NULL;
+    }
+
+    fire->fireTexture = SDL_CreateTextureFromSurface(rend, fire->fireSurface);
+    SDL_FreeSurface(fire->fireSurface);
+
+    if (!fire->fireTexture)
+    {
+        printf("error creating texture player: %s\n", SDL_GetError());
+        SDL_DestroyRenderer(rend);
+        return NULL;
+    }
+
+    fire->fireRect.w = TILE_WIDTH;
+    fire->fireRect.h = TILE_HEIGHT;
+    fire->fireRect.x = bombPosX;
+    fire->fireRect.y = bombPosY;
+
+    return fire;
+}
+
 Uint32 blastBomb(Uint32 time, void *voidBomb)
 {
     Bomb *bomb = (Bomb *)voidBomb;

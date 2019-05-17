@@ -34,6 +34,7 @@ int map()
 
     Player *player = loadPlayer(rend, win);
     Bomb *bomb = NULL;
+    Fire *fire = NULL;
 
     SDL_Surface *tileset = IMG_Load("asset/unnamed.bmp");
     if (!tileset)
@@ -268,6 +269,29 @@ int map()
             {
                 if (bomb->state == EXPLODED)
                 {
+                    fire = drawFire(bomb->bombRect.x, bomb->bombRect.y, rend, win);
+                    if(fire)
+                    {
+                        SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
+                        //killPlayer(fire, player);
+
+                        fire = drawFire(bomb->bombRect.x +15, bomb->bombRect.y, rend, win);
+                        SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
+                        //killPlayer(fire, player);
+
+
+                        fire = drawFire(bomb->bombRect.x -15, bomb->bombRect.y, rend, win);
+                        SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
+                        //killPlayer(fire, player);
+
+                        fire = drawFire(bomb->bombRect.x , bomb->bombRect.y+15, rend, win);
+                        SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
+                        //killPlayer(fire, player);
+
+                        fire = drawFire(bomb->bombRect.x , bomb->bombRect.y-15, rend, win);
+                        SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
+                        //killPlayer(fire, player);
+                    }
                     bomb = NULL;
                 }
                 else
