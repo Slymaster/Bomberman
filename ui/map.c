@@ -1,81 +1,4 @@
-#include <stdio.h>
 #include "helper.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_image.h>
-
-#define WINDOW_WIDTH (496)
-#define WINDOW_HEIGHT (208)
-
-#define TILE_WIDTH 16
-#define TILE_HEIGHT 16
-
-#define NUMBER_BLOCS_WIDTH 31
-#define NUMBER_BLOCS_HEIGHT 13
-
-// speed in pixels/second
-#define SPEED (300)
-
-
-
-int putBomb(void* renderer)
-{
-    SDL_Delay(3000);
-
-    SDL_Surface* bombSurface;
-    SDL_Texture* bombTexture;
-    //SDL_Rect bombRect;
-
-    SDL_Renderer *rend = (SDL_Renderer*) renderer;
-
-    if (!rend)
-    {
-        printf("error creating renderer: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
- 
-    bombSurface = IMG_Load("resources/bomb.png");
-
-    if(!bombSurface)
-    {
-         printf("error creating surface\n");
-         SDL_DestroyRenderer(rend);
-         return 1;
-
-    }
-
-    //SDL_FreeSurface(bombSurface);
-
-    /*bombSurface->w = 1;
-    bombSurface->h = 1;*/
-
-    bombTexture = SDL_CreateTextureFromSurface(rend, bombSurface);
-
-    if (!bombTexture)
-    {
-        printf("error creating texture: %s\n", SDL_GetError());
-        SDL_DestroyRenderer(rend);
-        return 1;
-    }
-
-    SDL_Rect bombRect = {1, 1, TILE_WIDTH, TILE_HEIGHT};
-    
-    SDL_QueryTexture(bombTexture, NULL, NULL, &bombRect.w, &bombRect.h);
-
-    bombRect.w = 4;
-    bombRect.h =4;
-
-    SDL_RenderCopy(rend, bombTexture, NULL, &bombRect);
-    SDL_RenderPresent(rend);
-
-   // SDL_Delay(3000);
-    //SDL_DestroyTexture(bombTexture);
-    //SDL_RenderClear(rend);
-
-    //pthread_exit(NULL);
-    return 1;
-}
 
 int map()
 {
@@ -100,6 +23,7 @@ int map()
     // create a renderer, which sets up the graphics hardware
     Uint32 render_flags = SDL_RENDERER_ACCELERATED;
     SDL_Renderer *rend = SDL_CreateRenderer(win, -1, render_flags);
+
     if (!rend)
     {
         printf("error creating renderer: %s\n", SDL_GetError());
@@ -108,30 +32,10 @@ int map()
         return 1;
     }
 
-    // load the image into memory using SDL_image library function
-    SDL_Surface *surface = IMG_Load("asset/view1.png");
-    if (!surface)
-    {
-        printf("error creating surface\n");
-        SDL_DestroyRenderer(rend);
-        SDL_DestroyWindow(win);
-        SDL_Quit();
-        return 1;
-    }
+    Player *player = loadPlayer(rend, win);
+    Bomb *bomb = NULL;
 
-    // load the image data into the graphics hardware's memory
-    SDL_Texture *tex = SDL_CreateTextureFromSurface(rend, surface);
-    SDL_FreeSurface(surface);
-    if (!tex)
-    {
-        printf("error creating texture: %s\n", SDL_GetError());
-        SDL_DestroyRenderer(rend);
-        SDL_DestroyWindow(win);
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_Surface *tileset = SDL_LoadBMP("asset/unnamed.bmp");
+    SDL_Surface *tileset = IMG_Load("asset/unnamed.bmp");
     if (!tileset)
     {
         printf("error creating surface\n");
@@ -140,8 +44,10 @@ int map()
         SDL_Quit();
         return 1;
     }
+
     SDL_Texture *tilesetTexture = SDL_CreateTextureFromSurface(rend, tileset);
     SDL_FreeSurface(tileset);
+
     if (!tilesetTexture)
     {
         printf("error creating texture: %s\n", SDL_GetError());
@@ -173,8 +79,7 @@ int map()
         "0111111111111111111111111111110",
         "0101010101010101010101010101010",
         "0111111111111111111111111111110",
-        "0000000000000000000000000000000"
-    };
+        "0000000000000000000000000000000"};
 
     int i, j;
     SDL_Rect rect_dst;
@@ -192,21 +97,20 @@ int map()
             SDL_RenderCopy(rend, tilesetTexture, &rect_src, &rect_dst);
         }
     }
-    SDL_RenderPresent(rend);
 
     // struct to hold the position and size of the sprite
     SDL_Rect dest;
     // get and scale the dimensions of texture
-    SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+    SDL_QueryTexture(player->playerTexture, NULL, NULL, &dest.w, &dest.h);
     dest.w = 9;
-    dest.h = 9;
+    dest.h = 14;
 
-    printf("Player dimension : [%d, %d]", dest.w, dest.h);
+    printf("Player position : [%d, %d]", dest.w, dest.h);
     fflush(stdout);
 
     // start sprite in center of screen
     float x_pos_old, y_pos_old = 0;
-    float x_pos = (WINDOW_WIDTH - dest.w) / 2; //(WINDOW_WIDTH - dest.w) / 2;
+    float x_pos = (WINDOW_WIDTH - dest.w) / 2;  //(WINDOW_WIDTH - dest.w) / 2;
     float y_pos = (WINDOW_HEIGHT - dest.h) / 2; //(WINDOW_HEIGHT - dest.h) / 2;
     float x_vel = 0;
     float y_vel = 0;
@@ -225,81 +129,71 @@ int map()
     int step_y = 0;
     // set to 1 when window close button is pressed
     int close_requested = 0;
-    //pthread_t my_thread;
 
-    SDL_Thread *putBombThread;
-    int threadValue;
+    Flag bombFlag = TRUTHY;
 
     // animation loop
     while (!close_requested)
     {
         // process events
         SDL_Event event;
-        while (SDL_PollEvent(&event))
+        SDL_WaitEvent(&event);
+
+        switch (event.type)
         {
-            switch (event.type)
+        case SDL_QUIT:
+            close_requested = 1;
+            break;
+        case SDL_KEYDOWN:
+            switch (event.key.keysym.scancode)
             {
-            case SDL_QUIT:
-                close_requested = 1;
+            case SDL_SCANCODE_W:
+            case SDL_SCANCODE_UP:
+                up = 1;
                 break;
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.scancode)
-                {
-                case SDL_SCANCODE_W:
-                case SDL_SCANCODE_UP:
-                    up = 1;
-                    break;
-                case SDL_SCANCODE_A:
-                case SDL_SCANCODE_LEFT:
-                    left = 1;
-                    break;
-                case SDL_SCANCODE_S:
-                case SDL_SCANCODE_DOWN:
-                    down = 1;
-                    break;
-                case SDL_SCANCODE_D:
-                case SDL_SCANCODE_RIGHT:
-                    right = 1;
-                    break;
-                
-                case SDL_SCANCODE_B:
-                   /* pthread_create(&my_thread, NULL, putBomb, &rend);
-                    pthread_join(my_thread, NULL);*/
-                    //putBomb(x_pos, y_pos, rend);
+            case SDL_SCANCODE_A:
+            case SDL_SCANCODE_LEFT:
+                left = 1;
+                break;
+            case SDL_SCANCODE_S:
+            case SDL_SCANCODE_DOWN:
+                down = 1;
+                break;
+            case SDL_SCANCODE_D:
+            case SDL_SCANCODE_RIGHT:
+                right = 1;
+                break;
 
-                    putBombThread = SDL_CreateThread(putBomb, "putBomb", &rend);
-
-                    if(NULL == putBombThread)
+            case SDL_SCANCODE_B:
+                    bombFlag = FALSY;
+                    if(bombFlag == FALSY)
                     {
-                        printf("error creating thread: %s\n", SDL_GetError());
-                    }else{
-                        SDL_WaitThread(putBombThread, &threadValue);
+                        bomb = putBomb(x_pos, y_pos, rend);
                     }
-                    break;
-                }
-                break;
-            case SDL_KEYUP:
-                switch (event.key.keysym.scancode)
-                {
-                case SDL_SCANCODE_W:
-                case SDL_SCANCODE_UP:
-                    up = 0;
-                    break;
-                case SDL_SCANCODE_A:
-                case SDL_SCANCODE_LEFT:
-                    left = 0;
-                    break;
-                case SDL_SCANCODE_S:
-                case SDL_SCANCODE_DOWN:
-                    down = 0;
-                    break;
-                case SDL_SCANCODE_D:
-                case SDL_SCANCODE_RIGHT:
-                    right = 0;
-                    break;
-                }
                 break;
             }
+            break;
+        case SDL_KEYUP:
+            switch (event.key.keysym.scancode)
+            {
+            case SDL_SCANCODE_W:
+            case SDL_SCANCODE_UP:
+                up = 0;
+                break;
+            case SDL_SCANCODE_A:
+            case SDL_SCANCODE_LEFT:
+                left = 0;
+                break;
+            case SDL_SCANCODE_S:
+            case SDL_SCANCODE_DOWN:
+                down = 0;
+                break;
+            case SDL_SCANCODE_D:
+            case SDL_SCANCODE_RIGHT:
+                right = 0;
+                break;
+            }
+            break;
         }
 
         // determine velocity
@@ -346,13 +240,14 @@ int map()
         {
             x_pos = x_pos_old;
             y_pos = y_pos_old;
+            printf("obstacle detected\n");
         }
         else
         {
             // set the positions in the struct
             dest.y = (int)y_pos;
             dest.x = (int)x_pos;
-            // printf("[x_pos, y_pos] : [%d, %d]", dest.x, dest.y);
+            //printf("[x_pos, y_pos] : [%d, %d]", dest.x, dest.y);
 
             // clear the window
             SDL_RenderClear(rend);
@@ -368,17 +263,29 @@ int map()
                     SDL_RenderCopy(rend, tilesetTexture, &rect_src, &rect_dst);
                 }
             }
-            // draw the image to the window
-            SDL_RenderCopy(rend, tex, NULL, &dest);
-            SDL_RenderPresent(rend);
+
+            if (bomb != NULL)
+            {
+                if (bomb->state == EXPLODED)
+                {
+                    bomb = NULL;
+                }
+                else
+                {
+                    SDL_RenderCopy(rend, bomb->bombTexture, NULL, &bomb->bombRect);
+                }
+            }
+
+            SDL_RenderCopy(rend, player->playerTexture, NULL, &dest);
             SDL_RenderPresent(rend);
         }
+
         // wait 1/60th of a second
         SDL_Delay(1000 / 60);
     }
 
     // clean up resources before exiting
-    SDL_DestroyTexture(tex);
+    SDL_DestroyTexture(tilesetTexture);
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
     SDL_Quit();

@@ -2,6 +2,7 @@
 #define _HELPER_H_
 
 #include <stdio.h>
+#include <unistd.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
@@ -32,7 +33,41 @@ typedef enum {
     PLAY_AT_FOUR
 } e_statMenue;
 
+typedef struct
+{
+    float x_pos;
+    float y_pos;
+    float width;
+    float height;
+    SDL_Surface *playerSurface;
+    SDL_Texture *playerTexture;
+    SDL_Rect bombRect;
+}Player;
+
+enum BombState { NOT_EXPLODED, EXPLODING, EXPLODED };
+
+typedef enum { FALSY = 0, TRUTHY = 1} Flag;
+
+typedef struct
+{
+    enum BombState state;
+    Uint32 lifeSpan;
+    unsigned int createdAt;
+    float x_pos;
+    float y_pos;
+    float width;
+    float height;
+    Player player;
+    SDL_Surface *bombSurface;
+    SDL_Texture *bombTexture;
+    SDL_Rect bombRect;
+    SDL_TimerID timerId;
+}Bomb;
+
 int map();
 int menu_options();
+Uint32 blastBomb(Uint32 time, void *voidBomb);
+Bomb *putBomb(float x_pos, float y_pos, SDL_Renderer *rend);
+Player *loadPlayer(SDL_Renderer *rend, SDL_Window *win);
 
 #endif
