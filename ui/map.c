@@ -214,6 +214,9 @@ int map()
         x_pos += x_vel / 60;
         y_pos += y_vel / 60;
 
+        player->x_pos = x_pos;
+        player->y_pos = y_pos;
+
         // collision detection with bounds
         if (x_pos <= 0)
             x_pos = 0;
@@ -273,24 +276,24 @@ int map()
                     if(fire)
                     {
                         SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
-                        //killPlayer(fire, player);
+                        killPlayer(fire, player);
 
                         fire = drawFire(bomb->bombRect.x +15, bomb->bombRect.y, rend, win);
                         SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
-                        //killPlayer(fire, player);
+                        killPlayer(fire, player);
 
 
                         fire = drawFire(bomb->bombRect.x -15, bomb->bombRect.y, rend, win);
                         SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
-                        //killPlayer(fire, player);
+                        killPlayer(fire, player);
 
                         fire = drawFire(bomb->bombRect.x , bomb->bombRect.y+15, rend, win);
                         SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
-                        //killPlayer(fire, player);
+                        killPlayer(fire, player);
 
                         fire = drawFire(bomb->bombRect.x , bomb->bombRect.y-15, rend, win);
                         SDL_RenderCopy(rend, fire->fireTexture, NULL, &fire->fireRect);
-                        //killPlayer(fire, player);
+                        killPlayer(fire, player);
                     }
                     bomb = NULL;
                 }

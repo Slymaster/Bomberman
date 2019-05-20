@@ -88,6 +88,7 @@ int map();
 Uint32 blastBomb(Uint32 time, void *voidBomb);
 Bomb *putBomb(float x_pos, float y_pos, SDL_Renderer *rend);
 Player *loadPlayer(SDL_Renderer *rend, SDL_Window *win);
+int killPlayer(Fire* fire, Player* player);
 Fire* drawFire(float bombPosX, float bombPosY, SDL_Renderer *rend, SDL_Window *win);
 
 #endif
