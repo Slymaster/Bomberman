@@ -4,8 +4,7 @@ int menu_default()
 {
     int run = 3;
     int down = 0;
-    SDL_Window *window = NULL;
-    SDL_Renderer *render = NULL;
+    SDL_Window* window = NULL;
     SDL_Surface* surface;
     SDL_Texture* img;
     SDL_Texture* start;
@@ -44,27 +43,27 @@ int menu_default()
     }
 
 
-    surface = IMG_Load("./asset/initial_menu.png");
+    surface = IMG_Load("asset/initial_menu.png");
     img = SDL_CreateTextureFromSurface(rend, surface);
     SDL_FreeSurface(surface);
 
     if(img == NULL)
     {
         SDL_Log("Error: can't load img > %s \n", SDL_GetError());
-        SDL_DestroyRenderer(render);
-        SDL_DestroyWindow(window);
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
         exit(EXIT_FAILURE);
     }
 
-    surface = IMG_Load("./asset/fleche.png");
+    surface = IMG_Load("asset/fleche.png");
     start = SDL_CreateTextureFromSurface(rend, surface);
     SDL_FreeSurface(surface);
 
     if(start == NULL)
     {
         SDL_Log("Error: can't load start img > %s \n", SDL_GetError());
-        SDL_DestroyRenderer(render);
-        SDL_DestroyWindow(window);
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
         exit(EXIT_FAILURE);
     }
 
@@ -102,7 +101,7 @@ int menu_default()
 
                     case SDLK_a:
                         SDL_DestroyRenderer(rend);
-                        SDL_DestroyWindow(window);
+                        SDL_DestroyWindow(win);
                         SDL_Quit();
                         map();
                     break;
@@ -172,7 +171,7 @@ int menu_default()
 
             case QUIT:
                 SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(window);
+                SDL_DestroyWindow(win);
                 SDL_Quit();
             break;
 
@@ -223,7 +222,7 @@ int menu_default()
     }
 
     SDL_DestroyRenderer(rend);
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(win);
     SDL_Quit();
 
    return EXIT_SUCCESS;

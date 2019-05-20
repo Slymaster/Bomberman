@@ -4,8 +4,6 @@ int menu_options(SDL_Window* win)
 {    
     int run = 3;
     int down = 0;
-    SDL_Window *window = NULL;
-    SDL_Renderer *render = NULL;
     SDL_Surface* surface;
     SDL_Texture* img;
     SDL_Texture* start;
@@ -25,30 +23,27 @@ int menu_options(SDL_Window* win)
         return 1;
     }
 
-
-
-
-        surface = IMG_Load("./asset/menu_options.png");
-        img = SDL_CreateTextureFromSurface(rend, surface);
-        SDL_FreeSurface(surface);
-
-        surface = IMG_Load("./asset/fleche.png");
-        start = SDL_CreateTextureFromSurface(rend, surface);
-        SDL_FreeSurface(surface);
+    surface = IMG_Load("asset/menu_options.png");
+    img = SDL_CreateTextureFromSurface(rend, surface);
+    SDL_FreeSurface(surface);
 
     if(img == NULL)
     {
         SDL_Log("Error: can't load img > %s \n", SDL_GetError());
-        SDL_DestroyRenderer(render);
-        SDL_DestroyWindow(window);
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
         exit(EXIT_FAILURE);
     }
 
-        if(start == NULL)
+    surface = IMG_Load("asset/fleche.png");
+    start = SDL_CreateTextureFromSurface(rend, surface);
+    SDL_FreeSurface(surface);
+
+    if(start == NULL)
     {
         SDL_Log("Error: can't load start img > %s \n", SDL_GetError());
-        SDL_DestroyRenderer(render);
-        SDL_DestroyWindow(window);
+        SDL_DestroyRenderer(rend);
+        SDL_DestroyWindow(win);
         exit(EXIT_FAILURE);
     }
 
@@ -130,14 +125,14 @@ int menu_options(SDL_Window* win)
 
             case RETURN:
                 SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(window);
+                SDL_DestroyWindow(win);
                 SDL_Quit();
                 menu_default();
             break;
 
             case QUIT:
                 SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(window);
+                SDL_DestroyWindow(win);
                 SDL_Quit();
             break;
 
@@ -184,7 +179,7 @@ int menu_options(SDL_Window* win)
     }
 
     SDL_DestroyRenderer(rend);
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(win);
     SDL_Quit();
 
    return EXIT_SUCCESS;
