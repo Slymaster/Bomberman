@@ -1,6 +1,6 @@
 #include "include/menu.h"
 
-int menu_options()
+int menu_options(SDL_Window* win)
 {    
     int run = 3;
     int down = 0;
@@ -14,24 +14,6 @@ int menu_options()
 
     puts("Nous sommes dans le menu options.");
 
-    // attempt to initialize graphics and timer system
-    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
-    {
-        printf("error initializing SDL: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    SDL_Window* win = SDL_CreateWindow("Bomberman",
-                                       SDL_WINDOWPOS_CENTERED,
-                                       SDL_WINDOWPOS_CENTERED,
-                                       557, 608, 0);
-    if (!win)
-    {
-        printf("error creating window: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
-
     // create a renderer, which sets up the graphics hardware
     Uint32 render_flags = SDL_RENDERER_ACCELERATED;
     SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
@@ -42,6 +24,9 @@ int menu_options()
         SDL_Quit();
         return 1;
     }
+
+
+
 
         surface = IMG_Load("./asset/menu_options.png");
         img = SDL_CreateTextureFromSurface(rend, surface);
@@ -94,21 +79,6 @@ int menu_options()
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym)
                 {
-                    case SDLK_ESCAPE:
-                        run = 0;
-                        printf("escape");
-                    break;
-
-                    case SDLK_a:
-                        choiceUser = PLAY_SOLO;
-                    break;
-
-                    case SDL_SCANCODE_KP_ENTER:
-                    case SDLK_KP_ENTER: // ne marche pas sur mon pc
-                        choiceUser = THIS;
-                        printf("enter");
-                    break;
-
                     case SDLK_d:
                         choiceUser = THIS;
                     break;
@@ -150,11 +120,6 @@ int menu_options()
 
         switch(choiceUser)
         {
-            case PLAY_SOLO:
-                // SDL_DestroyRenderer(rend);
-                // SDL_DestroyWindow(window);
-                // SDL_Quit();
-            break;
 
             case OPTIONS:
                 // SDL_DestroyRenderer(rend);
@@ -197,8 +162,6 @@ int menu_options()
             break;
 
             case THIS:
-                if(down == 0)
-                    choiceUser = PLAY_SOLO;
                 if(down == 2)
                     choiceUser = RETURN;
                 if(down == 3) // quit

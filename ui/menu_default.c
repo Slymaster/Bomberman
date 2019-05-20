@@ -24,7 +24,7 @@ int menu_default()
     SDL_Window* win = SDL_CreateWindow("Bomberman",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       557, 608, 0);
+                                       MENU_WIDTH, MENU_HEIGHT, 0);
     if (!win)
     {
         printf("error creating window: %s\n", SDL_GetError());
@@ -42,6 +42,7 @@ int menu_default()
         SDL_Quit();
         return 1;
     }
+
 
     surface = IMG_Load("./asset/initial_menu.png");
     img = SDL_CreateTextureFromSurface(rend, surface);
@@ -154,23 +155,19 @@ int menu_default()
         {
             case PLAY_SOLO:
                 SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(window);
+                SDL_DestroyWindow(win);
                 SDL_Quit();
                 map();
             break;
 
             case MULTIPLAYER:
                 SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(window);
-                SDL_Quit();
-                menu_multiplayer(); // display options
+                menu_multiplayer(win); // display options
             break;
 
             case OPTIONS:
                 SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(window);
-                SDL_Quit();
-                menu_options(); // display options
+                menu_options(win); // display options
             break;
 
             case QUIT:

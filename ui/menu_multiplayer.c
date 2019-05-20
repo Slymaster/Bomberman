@@ -1,6 +1,6 @@
 #include "include/menu.h"
 
-int menu_multiplayer()
+int menu_multiplayer(SDL_Window* win)
 {    
     int run = 3;
     int down = 0;
@@ -13,24 +13,6 @@ int menu_multiplayer()
     SDL_Event event;
 
     puts("Nous sommes dans le menu multiplayer.");
-
-    // attempt to initialize graphics and timer system
-    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
-    {
-        printf("error initializing SDL: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    SDL_Window* win = SDL_CreateWindow("Bomberman",
-                                       SDL_WINDOWPOS_CENTERED,
-                                       SDL_WINDOWPOS_CENTERED,
-                                       557, 608, 0);
-    if (!win)
-    {
-        printf("error creating window: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
 
     // create a renderer, which sets up the graphics hardware
     Uint32 render_flags = SDL_RENDERER_ACCELERATED;

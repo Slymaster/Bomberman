@@ -2,6 +2,9 @@
 #define _MENU_H_
 #include "helper.h"
 
+#define MENU_WIDTH (557)
+#define MENU_HEIGHT (608)
+
 typedef enum {
     MAIN_MENUE,
     INITIAL_MENU,
@@ -20,8 +23,8 @@ typedef enum {
 } e_statMenue;
 
 int menu_default();
-int menu_multiplayer();
-int menu_options();
+int menu_multiplayer(SDL_Window* win);
+int menu_options(SDL_Window* win);
 int map();
 int main();
 
