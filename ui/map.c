@@ -117,10 +117,10 @@ int map()
     float y_vel = 0;
 
     // keep track of which inputs are given
-    int up = 0;
-    int down = 0;
-    int left = 0;
-    int right = 0;
+    int move_up = 0;
+    int move_down = 0;
+    int move_left = 0;
+    int move_right = 0;
 
     int nb_grid_x = 0;
     int nb_grid_y = 0;
@@ -150,27 +150,26 @@ int map()
             {
             case SDL_SCANCODE_W:
             case SDL_SCANCODE_UP:
-                up = 1;
+                move_up = 1;
                 break;
             case SDL_SCANCODE_A:
             case SDL_SCANCODE_LEFT:
-                left = 1;
+                move_left = 1;
                 break;
             case SDL_SCANCODE_S:
             case SDL_SCANCODE_DOWN:
-                down = 1;
+                move_down = 1;
                 break;
             case SDL_SCANCODE_D:
             case SDL_SCANCODE_RIGHT:
-                right = 1;
+                move_right = 1;
                 break;
 
             case SDL_SCANCODE_B:
-                    bombFlag = FALSY;
-                    if(bombFlag == FALSY)
-                    {
-                        bomb = putBomb(x_pos, y_pos, rend);
-                    }
+                bombFlag = FALSY;
+                if(bombFlag == FALSY) {
+                    bomb = putBomb(x_pos, y_pos, rend);
+                }
                 break;
             }
             break;
@@ -179,19 +178,19 @@ int map()
             {
             case SDL_SCANCODE_W:
             case SDL_SCANCODE_UP:
-                up = 0;
+                move_up = 0;
                 break;
             case SDL_SCANCODE_A:
             case SDL_SCANCODE_LEFT:
-                left = 0;
+                move_left = 0;
                 break;
             case SDL_SCANCODE_S:
             case SDL_SCANCODE_DOWN:
-                down = 0;
+                move_down = 0;
                 break;
             case SDL_SCANCODE_D:
             case SDL_SCANCODE_RIGHT:
-                right = 0;
+                move_right = 0;
                 break;
             }
             break;
@@ -199,13 +198,13 @@ int map()
 
         // determine velocity
         x_vel = y_vel = 0;
-        if (up && !down && !left && !right)
+        if (move_up && !move_down && !move_left && !move_right)
             y_vel = -SPEED;
-        if (down && !up && !left && !right)
+        if (move_down && !move_up && !move_left && !move_right)
             y_vel = SPEED;
-        if (left && !right && !down && !up)
+        if (move_left && !move_right && !move_down && !move_up)
             x_vel = -SPEED;
-        if (right && !left && !down && !up)
+        if (move_right && !move_left && !move_down && !move_up)
             x_vel = SPEED;
 
         // update positions
