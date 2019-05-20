@@ -1,5 +1,4 @@
-#include "helper.h"
-
+#include "include/helper.h"
 
 int killPlayer(Fire *fire, Player *player)
 {
