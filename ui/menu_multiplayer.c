@@ -131,6 +131,7 @@ int menu_multiplayer(SDL_Window* win)
                 SDL_DestroyRenderer(rend);
                 SDL_DestroyWindow(win);
                 SDL_Quit();
+                return EXIT_SUCCESS;
             break;
 
             case INITIAL_MENU:
@@ -179,5 +180,5 @@ int menu_multiplayer(SDL_Window* win)
     SDL_DestroyWindow(win);
     SDL_Quit();
 
-   return EXIT_SUCCESS;
+    return (0);
 }
