@@ -1,5 +1,4 @@
-#include "include/helper.h"
-
+#include "include/bomb.h"
 
 Fire* drawFire(float bombPosX, float bombPosY, SDL_Renderer *rend, SDL_Window *win)
 {
