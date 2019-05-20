@@ -22,7 +22,7 @@ typedef enum {
     PLAY_AT_FOUR
 } e_statMenue;
 
-int menu_default();
+int menu_default(SDL_Window* win);
 int menu_multiplayer(SDL_Window* win);
 int menu_options(SDL_Window* win);
 int map();

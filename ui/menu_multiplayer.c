@@ -80,7 +80,6 @@ int menu_multiplayer(SDL_Window* win)
 
                     case SDLK_DOWN:
                     case SDLK_s:
-                        puts("down");
                         if(down == 0)
                             choiceUser = DOWN_MENU_1;
                         if(down == 1)
@@ -91,7 +90,6 @@ int menu_multiplayer(SDL_Window* win)
 
                     case SDLK_UP:
                     case SDLK_z:
-                        puts("up");
                         if(down == 1)
                             choiceUser = INITIAL_MENU;
                         if(down == 2)
@@ -125,9 +123,8 @@ int menu_multiplayer(SDL_Window* win)
 
             case RETURN:
                 SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(win);
                 SDL_Quit();
-                menu_default();
+                menu_default(win);
             break;
 
             case QUIT:

@@ -9,6 +9,8 @@ int map()
         return 1;
     }
 
+    
+
     SDL_Window *win = SDL_CreateWindow("Bomberman",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,

@@ -1,10 +1,9 @@
 #include "include/menu.h"
 
-int menu_default()
+int menu_default(SDL_Window* win)
 {
     int run = 3;
     int down = 0;
-    SDL_Window* window = NULL;
     SDL_Surface* surface;
     SDL_Texture* img;
     SDL_Texture* start;
@@ -13,21 +12,10 @@ int menu_default()
 
     puts("Menu par défaut");
 
-    // attempt to initialize graphics and timer system
+        // attempt to initialize graphics and timer system
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
     {
         printf("error initializing SDL: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    SDL_Window* win = SDL_CreateWindow("Bomberman",
-                                       SDL_WINDOWPOS_CENTERED,
-                                       SDL_WINDOWPOS_CENTERED,
-                                       MENU_WIDTH, MENU_HEIGHT, 0);
-    if (!win)
-    {
-        printf("error creating window: %s\n", SDL_GetError());
-        SDL_Quit();
         return 1;
     }
 
@@ -153,10 +141,10 @@ int menu_default()
         switch(choiceUser)
         {
             case PLAY_SOLO:
-                SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(win);
-                SDL_Quit();
-                map();
+                // SDL_DestroyRenderer(rend);
+                // SDL_DestroyWindow(win);
+                // SDL_Quit();
+                // map();
             break;
 
             case MULTIPLAYER:
