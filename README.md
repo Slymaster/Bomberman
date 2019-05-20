@@ -1,14 +1,16 @@
-# Bomberman - start_menue
-Le projet consiste en la réalisation d'un clone du célèbre bomberman multijoueurs en réseau.
-Affichage du menu
+# User interface
+Menu display and single-player playability on the map
 
-# :books: Compilation
+## :bulb: Compilation
 Makefile
 
-# :books: Compilation 2
-gcc main.c -lSDL2 -lSDL2_image \`sdl2-config --cflags --libs\`
+## :bulb: with flags directly in the "ui" folder
+gcc *.c -lSDL2 -lSDL2_image \`sdl2-config --cflags --libs\`
 
-# Navigation
-Touche D pour faire un choix depuis le menu.
+## :pencil: Navigation in the menu
+* :arrow_up: Moving up in the menu with the key Z 
+* :arrow_down: Moving down in the menu with the key S
+* :arrow_right: Key D to make a choice
 
-Touche C pour quitter depuis la map.
+## :pencil: Navigation in the game
+The character's movements on the map are done with ZQSD keys
