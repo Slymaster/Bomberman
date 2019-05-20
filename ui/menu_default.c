@@ -43,13 +43,9 @@ int menu_default()
         return 1;
     }
 
-        surface = IMG_Load("./asset/initial_menu.png");
-        img = SDL_CreateTextureFromSurface(rend, surface);
-        SDL_FreeSurface(surface);
-
-        surface = IMG_Load("./asset/fleche.png");
-        start = SDL_CreateTextureFromSurface(rend, surface);
-        SDL_FreeSurface(surface);
+    surface = IMG_Load("./asset/initial_menu.png");
+    img = SDL_CreateTextureFromSurface(rend, surface);
+    SDL_FreeSurface(surface);
 
     if(img == NULL)
     {
@@ -59,7 +55,11 @@ int menu_default()
         exit(EXIT_FAILURE);
     }
 
-        if(start == NULL)
+    surface = IMG_Load("./asset/fleche.png");
+    start = SDL_CreateTextureFromSurface(rend, surface);
+    SDL_FreeSurface(surface);
+
+    if(start == NULL)
     {
         SDL_Log("Error: can't load start img > %s \n", SDL_GetError());
         SDL_DestroyRenderer(render);
@@ -100,9 +100,9 @@ int menu_default()
                     break;
 
                     case SDLK_a:
-                                        SDL_DestroyRenderer(rend);
-                SDL_DestroyWindow(window);
-                SDL_Quit();
+                        SDL_DestroyRenderer(rend);
+                        SDL_DestroyWindow(window);
+                        SDL_Quit();
                         map();
                     break;
 
@@ -113,7 +113,7 @@ int menu_default()
                     case SDL_SCANCODE_KP_ENTER:
                     case SDLK_KP_ENTER: // ne marche pas sur mon pc
                         choiceUser = THIS;
-                        printf("enter");
+                        puts("enter");
                     break;
 
                     case SDLK_d:
@@ -140,26 +140,23 @@ int menu_default()
                             choiceUser = DOWN_MENU_2;
                         break;
 
-
-
                     default:
-                       // printf("no case match");
+                       puts("no case match");
                     break;
                 }
             break;
 
             default:
-                //printf("no case match");
             break;
         }
 
         switch(choiceUser)
         {
             case PLAY_SOLO:
-            //    SDL_DestroyRenderer(rend);
-            //    SDL_DestroyWindow(window);
-            //    SDL_Quit();
-                //map(); // display map
+                SDL_DestroyRenderer(rend);
+                SDL_DestroyWindow(window);
+                SDL_Quit();
+                map();
             break;
 
             case MULTIPLAYER:
@@ -176,7 +173,7 @@ int menu_default()
                 menu_options(); // display options
             break;
 
-                        case QUIT:
+            case QUIT:
                 SDL_DestroyRenderer(rend);
                 SDL_DestroyWindow(window);
                 SDL_Quit();
