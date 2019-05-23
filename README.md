@@ -5,7 +5,7 @@ Menu display and single-player playability on the map
 Makefile
 
 ## :bulb: with flags directly in the "ui" folder
-gcc *.c -lSDL2 -lSDL2_image \`sdl2-config --cflags --libs\`
+gcc *.c -lSDL2_image -lSDL2_ttf \`sdl2-config --cflags --libs\`
 
 ## :pencil: Navigation in the menu
 * :arrow_up: Moving up in the menu with the key Z 
